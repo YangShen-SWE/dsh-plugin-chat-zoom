@@ -1,0 +1,16 @@
+{
+  "name": "dsh-plugin-chat-zoom",
+  "version": "0.1.0",
+  "homepage": "https://github.com/YangShen-SWE/dsh-plugin-chat-zoom#readme",
+  "repository": { "type": "git", "url": "git+https://github.com/YangShen-SWE/dsh-plugin-chat-zoom.git" },
+  "bugs": { "url": "https://github.com/YangShen-SWE/dsh-plugin-chat-zoom/issues" },
+  "description": "缩放：Ctrl 调整聊天倍率，设置内控制，操作后提示 5 秒。",
+  "type": "module",
+  "license": "MIT",
+  "exports": { ".": "./index.js", "./client": "./lib/client.js", "./package.json": "./package.json" },
+  "dsh": {
+    "bundle": { "patch": "./cordis.patch.yml" },
+    "client": { "platform": "web", "inject": ["@deepseek-ai/dsh-client-ui-conversation", "@deepseek-ai/dsh-client-ui-chat", "@deepseek-ai/dsh-client-ui-settings-general"] }
+  },
+  "files": ["index.js", "lib/client.js", "cordis.patch.yml", "README.md", "LICENSE"]
+}

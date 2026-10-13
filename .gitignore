@@ -1,0 +1,7 @@
+# Release packages are distributed through GitHub Releases.
+*.tgz
+node_modules/
+.npm-cache/
+npm-debug.log*
+.DS_Store
+Thumbs.db
