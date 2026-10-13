@@ -4,6 +4,8 @@
 
 目标市场：[awesome-dsh-plugin/awesome-dsh-plugin](https://github.com/awesome-dsh-plugin/awesome-dsh-plugin)。本账号 Simple Desktop Pet 的 [PR #6267](https://github.com/awesome-dsh-plugin/awesome-dsh-plugin/pull/6267) 已于 2026-10-13 合并。缩放插件需要独立投稿；桌宠已收录不表示本插件也已收录。
 
+本次投稿：[Chat Zoom PR #7323](https://github.com/awesome-dsh-plugin/awesome-dsh-plugin/pull/7323)。投稿只表示已提交；请在原 PR 页面查看实际检查、评审和合并状态。
+
 规则来源：[贡献指南](https://github.com/awesome-dsh-plugin/awesome-dsh-plugin/blob/main/contributing.md)、[PR 模板](https://github.com/awesome-dsh-plugin/awesome-dsh-plugin/blob/main/.github/pull_request_template.md)及 [Submission gate 实现](https://github.com/awesome-dsh-plugin/awesome-dsh-plugin/blob/main/scripts/check-submission.mjs)。规则可能更新，维护时重新核对。
 
 ### 本次投稿范围
@@ -35,6 +37,8 @@ GitHub 仓库创建于 **2026-10-13 18:44:31 UTC**。满一天的最早时间为
 ## English
 
 Target: [awesome-dsh-plugin/awesome-dsh-plugin](https://github.com/awesome-dsh-plugin/awesome-dsh-plugin). Simple Desktop Pet [PR #6267](https://github.com/awesome-dsh-plugin/awesome-dsh-plugin/pull/6267) was merged on 2026-10-13. That does not list Chat Zoom automatically.
+
+Submission: [Chat Zoom PR #7323](https://github.com/awesome-dsh-plugin/awesome-dsh-plugin/pull/7323). Check that PR for the actual CI, review and merge state; submission alone does not mean admission.
 
 Follow the upstream [contribution guide](https://github.com/awesome-dsh-plugin/awesome-dsh-plugin/blob/main/contributing.md) and [PR template](https://github.com/awesome-dsh-plugin/awesome-dsh-plugin/blob/main/.github/pull_request_template.md). Add only `data/plugins/YangShen-SWE__dsh-plugin-chat-zoom.yml` under `ui`; do not change generated market READMEs, CI or unrelated entries. Keep supplemental documents in this repository. The package declares `dsh.bundle`, includes its patch, and the repository needs the `dsh-plugin` topic.
 
