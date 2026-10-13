@@ -11,6 +11,8 @@ DeepSeek Harness（DSH）聊天区域缩放插件。仅缩放聊天消息和输�
 
 [下载 v0.1.0](https://github.com/YangShen-SWE/dsh-plugin-chat-zoom/releases/tag/v0.1.0) · [报告问题](https://github.com/YangShen-SWE/dsh-plugin-chat-zoom/issues)
 
+补充文档：[隐私说明](PRIVACY.md) · [贡献与维护](CONTRIBUTING.md) · [市场投稿与合并注意事项](MARKET.md)。这些文档后补于 main；既有 v0.1.0 安装包与 tag 保持不变。市场投稿不等于已收录。
+
 ## 功能
 
 - 文字、代码、图片和输入控件一起进行布局缩放。
@@ -143,6 +145,8 @@ npm pack --ignore-scripts
 - License: [MIT](LICENSE)
 
 [Download v0.1.0](https://github.com/YangShen-SWE/dsh-plugin-chat-zoom/releases/tag/v0.1.0) · [Report an issue](https://github.com/YangShen-SWE/dsh-plugin-chat-zoom/issues)
+
+Additional documents: [Privacy](PRIVACY.md) · [Contributing](CONTRIBUTING.md) · [Market and merge notes](MARKET.md). These documents were added on main after release; the original v0.1.0 tag and archive remain unchanged. Submission does not mean admission.
 
 ### Features
 
