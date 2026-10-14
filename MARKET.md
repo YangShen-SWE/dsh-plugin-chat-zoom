@@ -14,7 +14,9 @@
 - 不修改市场自动生成的 README、其他插件条目或市场 CI。隐私、维护与投稿文档放在本插件仓库。
 - 插件已声明 `dsh.bundle` 并附带 `cordis.patch.yml`，不只是声明 `dsh.client`；仓库需有 `dsh-plugin` topic。
 - 使用固定版本的预构建包链接：`https://github.com/YangShen-SWE/dsh-plugin-chat-zoom/releases/download/v0.1.0/dsh-plugin-chat-zoom-0.1.0.tgz`。不将带版本的资产名接在 `latest/download/` 后，避免下次发布后出现 404。
-- 原 v0.1.0 tag、运行时代码与资产不重写。SHA-256：`908b0eca7bf91b4528a125f29b05a0590901ee29ad3fcb98f7afddb381510222`。main 的后补文档不冒充已包含在既有发布包中。
+- 原 v0.1.0 tag、发布包内的运行时代码与资产不重写。SHA-256：`908b0eca7bf91b4528a125f29b05a0590901ee29ad3fcb98f7afddb381510222`。main 的后补文档不冒充已包含在既有发布包中。
+
+2026-10-14：main 开发版本已更新为 v0.1.1，修正键盘焦点范围，**尚未发布新安装包**。市场条目仍保留有效的 v0.1.0 tarball 和对应功能描述；本次不将下载指向不存在的 v0.1.1 资产，不重复投稿或触发合并。具体修正及模拟测试限制见 [更新说明](CHANGELOG.md)。
 
 ### 仓库年龄门槛
 
@@ -43,6 +45,8 @@ Submission: [Chat Zoom PR #7323](https://github.com/awesome-dsh-plugin/awesome-d
 Follow the upstream [contribution guide](https://github.com/awesome-dsh-plugin/awesome-dsh-plugin/blob/main/contributing.md) and [PR template](https://github.com/awesome-dsh-plugin/awesome-dsh-plugin/blob/main/.github/pull_request_template.md). Add only `data/plugins/YangShen-SWE__dsh-plugin-chat-zoom.yml` under `ui`; do not change generated market READMEs, CI or unrelated entries. Keep supplemental documents in this repository. The package declares `dsh.bundle`, includes its patch, and the repository needs the `dsh-plugin` topic.
 
 The tarball URL pins v0.1.0. A versioned filename must not be used under `latest/download/`. Do not move the existing tag or replace its asset. SHA-256: `908b0eca7bf91b4528a125f29b05a0590901ee29ad3fcb98f7afddb381510222`. Additional main-branch documentation is not claimed to be inside the original archive.
+
+2026-10-14: main is now development version v0.1.1 with a keyboard-focus fix; **no new package has been released**. Keep the valid v0.1.0 market tarball and matching feature description. Do not point to a nonexistent v0.1.1 asset, resubmit, or trigger a merge. See the [changelog](CHANGELOG.md) for the fix and simulated-test limitations.
 
 **Age gate:** created 2026-10-13 18:44:31 UTC; eligible no earlier than 2026-10-14 18:44:31 UTC (20:44:31 in Denmark). Do not tick the one-day checkbox before that time. The current checker measures age when it runs; age-only failures can be rechecked upstream. No duplicate PR, close/reopen, empty push, fake date or gate bypass is needed. Scheduled rechecks have a queue and cooldown; eligibility does not guarantee an immediate green result.
 

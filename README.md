@@ -11,7 +11,9 @@ DeepSeek Harness（DSH）聊天区域缩放插件。仅缩放聊天消息和输�
 
 [下载 v0.1.0](https://github.com/YangShen-SWE/dsh-plugin-chat-zoom/releases/tag/v0.1.0) · [报告问题](https://github.com/YangShen-SWE/dsh-plugin-chat-zoom/issues)
 
-补充文档：[隐私说明](PRIVACY.md) · [贡献与维护](CONTRIBUTING.md) · [市场投稿与合并注意事项](MARKET.md)。这些文档后补于 main；既有 v0.1.0 安装包与 tag 保持不变。市场投稿不等于已收录。
+补充文档：[更新说明](CHANGELOG.md) · [隐私说明](PRIVACY.md) · [贡献与维护](CONTRIBUTING.md) · [市场投稿与合并注意事项](MARKET.md)。这些文档后补于 main；既有 v0.1.0 安装包与 tag 保持不变。市场投稿不等于已收录。
+
+**当前 main 开发版本：v0.1.1（尚未发布安装包）**。键盘焦点范围修正仅包含在当前源码中；下方下载和市场条目仍指向已发布的 v0.1.0，不包含本次修正。
 
 ## 功能
 
@@ -91,6 +93,8 @@ dsh plugin --profile desktop add "dsh-plugin-chat-zoom@file:C:/Downloads/dsh-plu
 
 加号支持 `Ctrl` + `=`、`Ctrl` + `Shift` + `=`；也支持小键盘加减号。普通滚轮与 `Ctrl+C/V/Z` 等编辑快捷键不会被接管。
 
+从 main 的 v0.1.1 起，“输入区有焦点”仅指输入区内的多行文本框、文本输入框或可编辑文字区域。消息按钮、链接、发送按钮、文件选择、复选框、选择框等获得焦点时，不接管这些键盘缩放操作，即使鼠标仍在聊天区。无控件焦点时，必须仍悬停聊天区才响应。滚轮与设置控件的规则不变；插件不接管不代表浏览器或宿主也会忽略按键。
+
 ## 隐私与卸载
 
 插件自身不发送网络请求、不上传聊天、不收集遥测，不写入服务端设置。只有倍率保存在当前浏览器的网站来源下，记录键为 `dsh-plugin-chat-zoom:v1:percent`；不跨设备同步，也不按会话分别保存。
@@ -112,7 +116,9 @@ dsh plugin --profile desktop add "dsh-plugin-chat-zoom@file:C:/Downloads/dsh-plu
 
 ## 仓库内容与重新打包
 
-本仓库只包含可分发的插件文件及本文档，不包含私人聊天、缓存、安装配置备份、迁移工具或开发测试记录。`lib/client.js` 为完整、可读的预构建客户端实现；本仓库未提供原始拆分源码和构建工具。
+本仓库包含插件文件、文档及无依赖的轻量回归测试，不包含私人聊天、缓存、安装配置备份或迁移工具。`lib/client.js` 为完整、可读的预构建客户端实现；本仓库未提供原始拆分源码和构建工具。
+
+在 Node.js 24 上运行 `node --test tests/chat-zoom.test.mjs` 可执行模拟 DOM 的事件回归测试。测试先在旧逻辑下复现焦点抢占，再验证修正；测试文件不随插件安装包分发。这不是 DSH/浏览器实机验收，详见[更新说明](CHANGELOG.md)。
 
 | 文件 | 用途 |
 | --- | --- |
@@ -146,7 +152,9 @@ npm pack --ignore-scripts
 
 [Download v0.1.0](https://github.com/YangShen-SWE/dsh-plugin-chat-zoom/releases/tag/v0.1.0) · [Report an issue](https://github.com/YangShen-SWE/dsh-plugin-chat-zoom/issues)
 
-Additional documents: [Privacy](PRIVACY.md) · [Contributing](CONTRIBUTING.md) · [Market and merge notes](MARKET.md). These documents were added on main after release; the original v0.1.0 tag and archive remain unchanged. Submission does not mean admission.
+Additional documents: [Changelog](CHANGELOG.md) · [Privacy](PRIVACY.md) · [Contributing](CONTRIBUTING.md) · [Market and merge notes](MARKET.md). These documents were added on main after release; the original v0.1.0 tag and archive remain unchanged. Submission does not mean admission.
+
+**Current main development version: v0.1.1 (no released package yet).** The keyboard focus fix is in the current source only. The downloads below and the market entry still point to published v0.1.0, which does not contain this fix.
 
 ### Features
 
@@ -222,6 +230,8 @@ Changes take effect immediately. Clearing the preference does not delete chats, 
 
 The plus shortcut also accepts `Ctrl` + `=` and `Ctrl` + `Shift` + `=`. Numpad plus and minus are supported. Normal scrolling and editing shortcuts such as `Ctrl+C/V/Z` are not intercepted.
 
+Starting with v0.1.1 on main, focused input means a textarea, text input, or contenteditable text area inside the composer. Focus on message buttons, links, the send button, file inputs, checkboxes, or selects does not claim keyboard zoom, even while the pointer remains over the chat. With no control focused, the pointer must still hover over the chat. Wheel and settings behavior is unchanged. An unclaimed key may still be handled by the browser or host.
+
 ### Privacy and removal
 
 The plugin itself makes no network requests, uploads no chats, collects no telemetry, and writes no server settings. Only the zoom preference is stored locally under `dsh-plugin-chat-zoom:v1:percent` for the current browser origin. It is not synced across devices or saved separately per conversation.
@@ -243,7 +253,9 @@ Release checks cover JavaScript syntax, package references, and client module re
 
 ### Repository and packaging
 
-The repository contains distributable plugin files and documentation only. It excludes private conversations, caches, installation/configuration backups, migration tools, and development test records. `lib/client.js` is the complete, readable prebuilt client implementation; the original split sources and build tools are not included.
+The repository contains plugin files, documentation, and small dependency-free regression tests. It excludes private conversations, caches, installation/configuration backups, and migration tools. `lib/client.js` is the complete, readable prebuilt client implementation; the original split sources and build tools are not included.
+
+Run `node --test tests/chat-zoom.test.mjs` on Node.js 24 for simulated-DOM event regression checks. The tests reproduced the focus issue before the fix and verify the corrected behavior. Tests are excluded from installation packages. They are not real DSH/browser acceptance; see the [changelog](CHANGELOG.md).
 
 | File | Purpose |
 | --- | --- |

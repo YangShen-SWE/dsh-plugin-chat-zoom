@@ -8,11 +8,11 @@
 
 提交前检查：
 
-1. 运行 `node --check index.js` 和 `node --check lib/client.js`。
-2. 用 `npm pack --dry-run --ignore-scripts` 核对包清单，确认 `dsh.bundle.patch`、宿主入口、客户端、README 和 LICENSE 均存在。
+1. 运行 `node --check index.js`、`node --check lib/client.js`，以及 `node --test tests/chat-zoom.test.mjs`（Node.js 24，无额外依赖）。测试挂载模拟 DOM 中的真实控制器，不等于宿主实机验收。
+2. 用 `npm pack --dry-run --ignore-scripts` 核对包清单，确认 `dsh.bundle.patch`、宿主入口、客户端、README、更新说明、补充文档和 LICENSE 均存在，测试文件不进入安装包。
 3. 实机验证聊天与输入区缩放、设置控件、Ctrl 快捷键、边界倍率、刷新恢复、倍率清除及禁用清理；同时确认侧栏/设置不缩放、模态弹窗与中文输入法不被抢占。注明未完成的场景，不用语法检查冒充实机验收。
 
-新版本修改版本号并创建新 tag / Release，不移动既有 tag，也不替换已经发布的安装包。文档补充可以只更新 main；v0.1.0 原安装包保留发布时的 README，后补文档以 main 为准。
+有实质修改且检查通过后递增 `package.json` 的当前版本，并同步 `CHANGELOG.md`、必要的中英文使用说明。开发版本可以先提交 main；只有明确获得发布授权时才创建新 tag / Release，且不移动既有 tag 或替换已发布安装包。没有新 Release 时，下载与市场 tarball 继续指向旧的有效版本，不把开发功能说成已在旧包发布。v0.1.0 原安装包保留发布时的 README，后补文档以 main 为准。
 
 市场投稿只修改本插件单个 YAML 条目，不手改市场生成的 README，不动其他插件，详见 [市场投稿与合并说明](MARKET.md)。
 
@@ -24,10 +24,10 @@ The readable prebuilt client is the maintained runtime in this repository; split
 
 Before submitting:
 
-1. Run `node --check index.js` and `node --check lib/client.js`.
-2. Inspect `npm pack --dry-run --ignore-scripts` for the bundle patch, host entry, client, README and license.
+1. Run `node --check index.js`, `node --check lib/client.js`, and `node --test tests/chat-zoom.test.mjs` (Node.js 24, no extra dependencies). The tests mount the real controller in a simulated DOM, not a real DSH host.
+2. Inspect `npm pack --dry-run --ignore-scripts` for the bundle patch, host entry, client, README, changelog, supplemental documents and license. Tests must stay outside the installation archive.
 3. Check scoped chat/composer zoom, settings, Ctrl gestures, limits, preference restore/clear and cleanup on a real host. Check unaffected sidebar/settings, modal dialogs and IME. State untested scenarios; syntax checks are not real-host acceptance.
 
-Use a new version, tag and release for runtime changes. Do not move old tags or replace released packages. Documentation can be updated on main only; the original v0.1.0 archive retains its release-time README, while supplemental documents live on main.
+After meaningful changes and passing checks, increment the current `package.json` version and update `CHANGELOG.md` plus any affected bilingual usage instructions. Development versions may be committed to main before release. Create a new tag / Release only with explicit publishing authorization. Never move old tags or replace released packages. Without a new Release, keep downloads and the market tarball on the valid older version; do not claim development features are in that old package. The original v0.1.0 archive retains its release-time README; supplemental documents live on main.
 
 Market PRs change only this plugin's entry and no generated market README or unrelated entries. See [market and merge notes](MARKET.md).
