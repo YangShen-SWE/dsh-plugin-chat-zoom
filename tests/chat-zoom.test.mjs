@@ -271,7 +271,8 @@ function settingsFixture(t, supported = true) {
   let Settings;
   const React = {
     createElement: (type, props, ...children) => ({ type, props: props ?? {}, children: children.flat() }),
-    useSyncExternalStore: (_subscribe, getSnapshot) => getSnapshot()
+    useSyncExternalStore: (_subscribe, getSnapshot) => getSnapshot(),
+    useId: () => ':test-memory-description:'
   };
   api.createChatZoomClient(React).apply({
     effect: start => t.after(start()),
@@ -361,4 +362,82 @@ test('settings separate primary adjustments from memory actions and retain wrap/
   assert.match(css, /\.chat-zoom-settings-summary \{[^}]*flex-wrap:wrap/);
   assert.match(css, /\.chat-zoom-settings-actions,[^{]*\{[^}]*flex-wrap:wrap/);
   assert.match(css, /\.chat-zoom-settings button:focus-visible/);
+});
+
+const statusText = f => text(nodes(f.render(), node => node.props.role === 'status')[0]);
+
+test('settings show an initial status without claiming a stored preference', t => {
+  const f = settingsFixture(t);
+  assert.match(statusText(f), /当前聊天倍率 100%/);
+  assert.doesNotMatch(statusText(f), /已保存/);
+  assert.equal(f.storage.size, 0);
+  assert.equal(nodes(f.render(), node => node.props.role === 'status')[0].props['aria-atomic'], 'true');
+  assert.equal(byType(f.render(), 'output')[0].props['aria-live'], 'off');
+});
+
+test('settings announce changes and distinguish reset from removing just the zoom key', t => {
+  const f = settingsFixture(t);
+  byType(f.render(), 'select')[0].props.onChange({ target: { value: '150' } });
+  assert.match(statusText(f), /150%.*保存/);
+  button(f.render(), '恢复 100%').props.onClick();
+  assert.match(statusText(f), /100%.*保存/);
+  f.storage.set('unrelated', 'keep');
+  button(f.render(), '清除倍率记忆').props.onClick();
+  assert.match(statusText(f), /已恢复 100%，并清除/);
+  assert.equal(f.storage.has('dsh-plugin-chat-zoom:v1:percent'), false);
+  assert.equal(f.storage.get('unrelated'), 'keep');
+  button(f.render(), '恢复 100%').props.onClick();
+  assert.equal(f.storage.get('dsh-plugin-chat-zoom:v1:percent'), '100');
+  assert.match(statusText(f), /100%.*已保存/);
+});
+
+test('same-level selection retries saving and replaces stale clear feedback', t => {
+  const f = settingsFixture(t);
+  button(f.render(), '清除倍率记忆').props.onClick();
+  byType(f.render(), 'select')[0].props.onChange({ target: { value: '100' } });
+  assert.equal(f.storage.get('dsh-plugin-chat-zoom:v1:percent'), '100');
+  assert.match(statusText(f), /100%.*已保存/);
+  assert.doesNotMatch(statusText(f), /并清除/);
+});
+
+test('blocked storage reports change, same-level retry and clear failures truthfully', t => {
+  const f = settingsFixture(t);
+  const setItem = f.win.localStorage.setItem;
+  f.win.localStorage.setItem = () => { throw new Error('storage blocked'); };
+  byType(f.render(), 'select')[0].props.onChange({ target: { value: '140' } });
+  assert.equal(text(byType(f.render(), 'output')[0]), '140%');
+  assert.match(statusText(f), /无法保存/);
+  byType(f.render(), 'select')[0].props.onChange({ target: { value: '140' } });
+  assert.match(statusText(f), /无法保存/);
+  f.win.localStorage.setItem = setItem;
+  byType(f.render(), 'select')[0].props.onChange({ target: { value: '140' } });
+  assert.match(statusText(f), /已保存/);
+  f.win.localStorage.removeItem = () => { throw new Error('remove blocked'); };
+  button(f.render(), '清除倍率记忆').props.onClick();
+  assert.equal(text(byType(f.render(), 'output')[0]), '100%');
+  assert.match(statusText(f), /已恢复 100%，但无法访问/);
+  assert.doesNotMatch(statusText(f), /并清除/);
+});
+
+test('reset and clear have linked descriptions and no custom keyboard interception', t => {
+  const f = settingsFixture(t);
+  const tree = f.render();
+  const reset = button(tree, '恢复 100%');
+  const clear = button(tree, '清除倍率记忆');
+  const id = reset.props['aria-describedby'];
+  assert.equal(clear.props['aria-describedby'], id);
+  const description = nodes(tree, node => node.props.id === id);
+  assert.equal(description.length, 1);
+  assert.match(text(description[0]), /恢复默认倍率并保存 100%/);
+  assert.match(text(description[0]), /删除本插件的倍率记录；再次调整会重新保存/);
+  assert.match(text(tree), /Tab \/ Shift\+Tab.*方向键.*Enter 或空格/);
+  for (const control of [...byType(tree, 'button'), ...byType(tree, 'select')]) {
+    assert.equal(control.props.tabIndex, undefined);
+    assert.equal(control.props.onKeyDown, undefined);
+    assert.equal(control.props.autoFocus, undefined);
+  }
+  f.doc.activeElement = f.settings;
+  for (const key of ['Tab', 'ArrowDown', 'Enter', ' ']) {
+    assert.equal(f.dispatch('keydown', { key, ctrlKey: false }).defaultPrevented, false);
+  }
 });

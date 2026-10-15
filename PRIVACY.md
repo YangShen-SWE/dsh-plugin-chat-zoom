@@ -2,7 +2,7 @@
 
 ## 中文
 
-本说明适用于 `dsh-plugin-chat-zoom` v0.1.0 的插件运行时，不涵盖 DSH 宿主、GitHub 下载或其他插件。
+本说明适用于 `dsh-plugin-chat-zoom` v0.1.0 及当前 main 的插件运行时，不涵盖 DSH 宿主、GitHub 下载或其他插件。main 的 v0.1.3 未发布；它明确保证“恢复 100%”在当前已为 100% 时也尝试保存该值。“清除倍率记忆”删除该键，后续调整或恢复会重新保存；保存或删除失败会显示状态提示。存储键、数据类型和权限不变；这些改进不属于原 v0.1.0 安装包。
 
 - **保存什么**：只保存聊天倍率（80–200 的整数），键名为 `dsh-plugin-chat-zoom:v1:percent`，位置是当前浏览器来源的 `localStorage`。不跨设备同步，也不按聊天会话保存。
 - **如何使用页面**：读取聊天 DOM 结构、焦点和布局位置，监听相关键盘与滚轮事件，调整聊天消息和输入区的 CSS `zoom`。不把聊天内容提取到持久存储，不修改聊天记录或草稿数据。宿主入口不执行服务端功能。
@@ -14,7 +14,7 @@
 
 ## English
 
-This statement covers the plugin runtime in v0.1.0, not the DSH host, GitHub downloads, or other plugins.
+This statement covers the plugin runtime in v0.1.0 and current main, not the DSH host, GitHub downloads, or other plugins. Unreleased v0.1.3 on main explicitly attempts to save 100% on reset even when the current value is already 100%. Clear removes the key; a later adjustment or reset saves it again. Failed writes/removals are reported in status text. The key, data type and permissions are unchanged. These improvements are not in the original v0.1.0 archive.
 
 - **Stored data:** only an integer zoom percentage (80–200), under `dsh-plugin-chat-zoom:v1:percent` in the current browser origin's `localStorage`. No device sync or per-chat records.
 - **Page access:** inspect chat DOM structure, focus and layout; listen for scoped keyboard/wheel events; apply CSS `zoom` to messages and the input area. Chat text is not copied into persistent storage. Chat records and draft data are not edited. The host entry is inert.

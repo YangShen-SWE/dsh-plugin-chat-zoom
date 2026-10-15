@@ -1,5 +1,27 @@
 # Changelog · 更新说明
 
+## v0.1.3 — Unreleased / 未发布（2026-10-15，D2 晚间）
+
+### 中文
+
+- **需求与实现**：完成设置剩余反馈，明确恢复与清除的区别，不增加假快捷键配置。设置有初始倍率状态、成功保存和保存/删除失败反馈；恢复/清除按钮关联区别说明，保留原生 Tab、选择框和按钮交互，无自定义键盘拦截、依赖或新设置。
+- **修复**：清除记录后当前仍为 100% 时，“恢复 100%”此前提前返回，不会保存文档承诺的默认值。现在相同倍率也尝试保存并更新状态，允许保存失败后重试，避免残留“已清除”的过时反馈。
+- **保持**：只缩放 DSH 聊天与输入区；键盘/滚轮作用范围、倍率边界和清理不变。倍率存储键与格式不变，只明确了同倍率恢复/调整时的保存时机；没有新增权限或网络行为。中英文 README 和隐私说明同步。
+- **测试**：新增 5 项虚拟 React 树/模拟 DOM 测试，覆盖初始状态、恢复/清除/再次恢复、同倍率重试、存储失败及重试、描述关联与原生键盘不拦截。全部 34 项通过；入口、客户端与测试语法检查通过。
+- **验证**：10 文件打包清单、模块注册、版本和文档相对链接通过检查；测试不进入安装包。
+- **未测与限制**：没有在真实 DSH 验收视觉、Tab 顺序、浏览器选择框、物理输入或屏幕阅读器；虚拟树检查不证明真实播报。没有新增 DOM 兼容检测或快捷键自定义。本日两个开发任务到此结束。
+- **发布与市场**：仅 main 开发更新，无 Release、部署、旧 tag/包改写或自动合并。市场继续使用有效的 v0.1.0 tarball，不含本次开发更新。
+
+### English
+
+- **Requirement and implementation:** complete settings feedback and distinguish reset from clear, without placeholder shortcut controls. Settings show initial level, save success and save/removal failures. Reset/clear reference explanatory text. Native Tab/select/button interaction remains; no new key handler, dependency or setting.
+- **Fixed:** after clearing the record while at 100%, reset previously returned early without saving the documented default. Same-level actions now attempt saving and refresh status, allowing retries and replacing stale cleared messages.
+- **Unchanged:** DSH chat/composer-only scope, keyboard/wheel eligibility, limits and cleanup. Storage key/format stay the same; only same-level save timing is clarified. No added permissions or networking. Bilingual README and privacy notes are updated.
+- **Tests:** 5 new virtual-React-tree/simulated-DOM tests cover initial status, reset/clear/reset, same-level retry, blocked storage/recovery, linked descriptions and unclaimed native keys. All 34 tests and host/client/test syntax checks pass.
+- **Validation:** 10-file package list, module registration, version and relative documentation links checked. Tests stay outside installation archives.
+- **Not tested / limits:** no real DSH visual, Tab-order, browser-select, physical-input or screen-reader acceptance; virtual trees do not prove actual announcements. No new DOM compatibility detection or custom shortcut feature. This completes today's two development tasks.
+- **Release and market:** main-only update; no Release, deployment, old-tag/asset rewrite or auto-merge. Market installation remains on the valid v0.1.0 tarball, without these development changes.
+
 ## v0.1.2 — Unreleased / 未发布（2026-10-15，D2 下午）
 
 ### 中文

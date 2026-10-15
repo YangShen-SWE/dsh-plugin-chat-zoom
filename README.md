@@ -13,7 +13,7 @@ DeepSeek Harness（DSH）聊天区域缩放插件。仅缩放聊天消息和输�
 
 补充文档：[更新说明](CHANGELOG.md) · [隐私说明](PRIVACY.md) · [贡献与维护](CONTRIBUTING.md) · [市场投稿与合并注意事项](MARKET.md)。这些文档后补于 main；既有 v0.1.0 安装包与 tag 保持不变。市场投稿不等于已收录。
 
-**当前 main 开发版本：v0.1.2（尚未发布安装包）**。键盘焦点范围修正与设置倍率布局优化仅包含在当前源码中；下方下载和市场条目仍指向已发布的 v0.1.0，不包含这些更新。
+**当前 main 开发版本：v0.1.3（尚未发布安装包）**。键盘焦点范围修正、设置布局与操作反馈优化仅包含在当前源码中；下方下载和市场条目仍指向已发布的 v0.1.0，不包含这些更新。
 
 ## 功能
 
@@ -84,6 +84,10 @@ dsh plugin --profile desktop add "dsh-plugin-chat-zoom@file:C:/Downloads/dsh-plu
 | 清除倍率记忆 | 恢复 100%，删除本插件保存的倍率记录 |
 
 修改立即生效。清除倍率记忆不会删除聊天、输入草稿或其他设置。
+
+从 main 的 v0.1.3 起，设置底部显示初始倍率、操作完成或保存失败的状态。“恢复 100%”会保存 100%，即使当前已经是 100%；“清除倍率记忆”会恢复 100% 并删除记录，之后调整倍率或再次恢复会重新保存。无法保存/删除时会明确提示，而不声称记录已清除。存储键与格式不变。
+
+设置使用原生键盘操作：`Tab` / `Shift+Tab` 移动焦点，方向键选择倍率，`Enter` 或空格激活按钮；不依赖聊天缩放快捷键，也没有“恢复快捷键”配置。恢复/清除按钮关联同一段区别说明，底部状态使用礼貌播报。已完成模拟树与事件检查，真实 Tab 顺序、选择框在各浏览器的交互和屏幕阅读器效果仍需实机验收。
 
 ### 快捷键
 
@@ -156,7 +160,7 @@ npm pack --ignore-scripts
 
 Additional documents: [Changelog](CHANGELOG.md) · [Privacy](PRIVACY.md) · [Contributing](CONTRIBUTING.md) · [Market and merge notes](MARKET.md). These documents were added on main after release; the original v0.1.0 tag and archive remain unchanged. Submission does not mean admission.
 
-**Current main development version: v0.1.2 (no released package yet).** The keyboard focus fix and settings layout improvements are in the current source only. The downloads below and the market entry still point to published v0.1.0, which does not contain these updates.
+**Current main development version: v0.1.3 (no released package yet).** The keyboard focus fix, settings layout and action-feedback improvements are in the current source only. The downloads below and the market entry still point to published v0.1.0, which does not contain these updates.
 
 ### Features
 
@@ -225,6 +229,10 @@ Starting with v0.1.2 on main, the scope notice states that only chat messages an
 | 清除倍率记忆 | Reset to 100% and remove this plugin's saved preference |
 
 Changes take effect immediately. Clearing the preference does not delete chats, drafts, or other settings.
+
+Starting with v0.1.3 on main, the settings status shows the initial level, action feedback or storage failures. Reset saves 100%, even when already at 100%. Clear resets to 100% and removes the record; a later adjustment or reset saves it again. Failed saves/removals are reported, not described as successful clearing. The storage key and format are unchanged.
+
+Settings use native keyboard controls: `Tab` / `Shift+Tab` move focus, arrow keys select a level, and `Enter` or Space activates buttons. Chat zoom shortcuts are not required; there is no restore-shortcut configuration. Reset/clear buttons reference the same explanatory text, and the status uses polite announcements. Simulated-tree/event checks pass, but real Tab order, browser-specific select behavior and screen-reader announcements still require real-host acceptance.
 
 | Shortcut | Action | Where it works |
 | --- | --- | --- |
