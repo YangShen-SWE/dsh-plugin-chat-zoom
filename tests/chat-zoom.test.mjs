@@ -8,13 +8,14 @@ const clientSource = await readFile(new URL('../lib/client.js', import.meta.url)
 const factoryReturn = "    return createChatZoomClient(require('react'));";
 assert.equal(clientSource.split(factoryReturn).length, 2, 'locate the client factory return exactly once');
 let api;
-vm.runInNewContext(clientSource.replace(factoryReturn,
-  '    return { mountChatZoom };'), {
+const sandbox = {
   window: { __ModuleLoader__: { load(definition) {
     assert.equal(definition.id, 'dsh-plugin-chat-zoom');
     api = definition.factory(() => { throw new Error('test must not load a separate React'); });
   } } }
-});
+};
+vm.runInNewContext(clientSource.replace(factoryReturn,
+  '    return { mountChatZoom, createChatZoomClient };'), sandbox);
 
 // Only selectors used by this plugin are modeled. No layout/browser fidelity is claimed.
 class Element {
@@ -139,7 +140,7 @@ function fixture(t) {
     return event;
   }
   return {
-    controller, dispatch, doc, body, html, root, flow, composer, textarea, editable,
+    controller, dispatch, win, doc, body, html, root, flow, composer, textarea, editable,
     plainInput, textInput, button, link, send, file, checkbox, select, embedded,
     terminal, ignoredInput, sidebar, settings, storage, listeners,
     tick: amount => { clock += amount; }
@@ -260,4 +261,104 @@ test('settings controller, limits, storage clearing and disposal still work', t 
   assert.equal(f.listeners.size, 0);
   assert.equal(f.flow.getAttribute('data-dsh-chat-zoom-owner'), null);
   assert.equal(f.composer.getAttribute('data-dsh-chat-zoom-owner'), null);
+});
+
+// A virtual React tree checks real settings callbacks, not browser rendering or tab order.
+function settingsFixture(t, supported = true) {
+  const f = fixture(t);
+  f.win.CSS.supports = () => supported;
+  sandbox.window = f.win;
+  let Settings;
+  const React = {
+    createElement: (type, props, ...children) => ({ type, props: props ?? {}, children: children.flat() }),
+    useSyncExternalStore: (_subscribe, getSnapshot) => getSnapshot()
+  };
+  api.createChatZoomClient(React).apply({
+    effect: start => t.after(start()),
+    slots: {
+      inject(name, register) { assert.equal(name, 'settings.section'); register(); },
+      register(metadata, component) {
+        assert.equal(metadata.id, 'chat-zoom');
+        Settings = component;
+      }
+    }
+  });
+  const render = () => Settings();
+  return { ...f, render };
+}
+function nodes(tree, predicate) {
+  if (!tree || typeof tree !== 'object') return [];
+  return [...(predicate(tree) ? [tree] : []), ...tree.children.flatMap(child => nodes(child, predicate))];
+}
+function text(tree) {
+  return tree && typeof tree === 'object' ? tree.children.map(text).join('') : String(tree ?? '');
+}
+const byType = (tree, type) => nodes(tree, node => node.type === type);
+const button = (tree, label) => byType(tree, 'button').find(node => text(node) === label);
+
+test('settings show current percentage, local scope and only implemented native controls', t => {
+  const f = settingsFixture(t);
+  const tree = f.render();
+  const output = byType(tree, 'output')[0];
+  assert.equal(text(output), '100%');
+  assert.equal(output.props['aria-label'], '当前聊天倍率');
+  assert.match(text(tree), /仅缩放聊天消息与输入区。侧栏、设置和全局弹窗不变。/);
+  assert.match(text(tree), /范围 80%—200%，每档 10 个百分点。/);
+  assert.equal(nodes(tree, node => node.props.role === 'group' && node.props['aria-label'] === '聊天倍率').length, 1);
+  assert.equal(byType(tree, 'select').length, 1);
+  assert.equal(byType(tree, 'input').length, 0);
+  assert.deepEqual(byType(tree, 'button').map(text), ['缩小', '放大', '恢复 100%', '清除倍率记忆']);
+  assert.equal(nodes(tree, node => node.props.role === 'status' && node.props['aria-live'] === 'polite').length, 1);
+});
+
+test('settings selection, zoom buttons, reset and clear stay wired to the real controller', t => {
+  const f = settingsFixture(t);
+  byType(f.render(), 'select')[0].props.onChange({ target: { value: '140' } });
+  assert.equal(text(byType(f.render(), 'output')[0]), '140%');
+  button(f.render(), '缩小').props.onClick();
+  assert.equal(text(byType(f.render(), 'output')[0]), '130%');
+  button(f.render(), '放大').props.onClick();
+  assert.equal(byType(f.render(), 'select')[0].props.value, 140);
+  button(f.render(), '恢复 100%').props.onClick();
+  assert.equal(text(byType(f.render(), 'output')[0]), '100%');
+  assert.equal(f.storage.get('dsh-plugin-chat-zoom:v1:percent'), '100');
+  f.storage.set('unrelated', 'keep');
+  button(f.render(), '清除倍率记忆').props.onClick();
+  assert.equal(f.storage.has('dsh-plugin-chat-zoom:v1:percent'), false);
+  assert.equal(f.storage.get('unrelated'), 'keep');
+});
+
+test('settings preserve all options and disable only the relevant boundary button', t => {
+  const f = settingsFixture(t);
+  assert.deepEqual(byType(f.render(), 'option').map(node => node.props.value), Array.from({ length: 13 }, (_, i) => 80 + i * 10));
+  for (const value of [80, 200]) {
+    byType(f.render(), 'select')[0].props.onChange({ target: { value: String(value) } });
+    const tree = f.render();
+    assert.equal(text(byType(tree, 'output')[0]), `${value}%`);
+    assert.equal(button(tree, '缩小').props.disabled, value === 80);
+    assert.equal(button(tree, '放大').props.disabled, value === 200);
+    assert.equal(byType(tree, 'select')[0].props.disabled, false);
+  }
+});
+
+test('unsupported zoom keeps native settings controls disabled and the status visible', t => {
+  const f = settingsFixture(t, false);
+  const tree = f.render();
+  for (const node of [...byType(tree, 'button'), ...byType(tree, 'select')]) assert.equal(node.props.disabled, true);
+  assert.match(text(nodes(tree, node => node.props.role === 'status')[0]), /不支持/);
+  assert.equal(text(byType(tree, 'output')[0]), '100%');
+});
+
+test('settings separate primary adjustments from memory actions and retain wrap/focus CSS', t => {
+  const f = settingsFixture(t);
+  const tree = f.render();
+  const primary = nodes(tree, node => node.props.className === 'chat-zoom-settings-actions')[0];
+  const memory = nodes(tree, node => node.props.className === 'chat-zoom-settings-memory')[0];
+  assert.deepEqual(byType(primary, 'button').map(text), ['缩小', '放大']);
+  assert.deepEqual(byType(memory, 'button').map(text), ['恢复 100%', '清除倍率记忆']);
+  for (const control of byType(tree, 'button')) assert.equal(control.props.type, 'button');
+  const css = f.doc.head.children[0].textContent;
+  assert.match(css, /\.chat-zoom-settings-summary \{[^}]*flex-wrap:wrap/);
+  assert.match(css, /\.chat-zoom-settings-actions,[^{]*\{[^}]*flex-wrap:wrap/);
+  assert.match(css, /\.chat-zoom-settings button:focus-visible/);
 });

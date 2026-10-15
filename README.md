@@ -13,7 +13,7 @@ DeepSeek Harness（DSH）聊天区域缩放插件。仅缩放聊天消息和输�
 
 补充文档：[更新说明](CHANGELOG.md) · [隐私说明](PRIVACY.md) · [贡献与维护](CONTRIBUTING.md) · [市场投稿与合并注意事项](MARKET.md)。这些文档后补于 main；既有 v0.1.0 安装包与 tag 保持不变。市场投稿不等于已收录。
 
-**当前 main 开发版本：v0.1.1（尚未发布安装包）**。键盘焦点范围修正仅包含在当前源码中；下方下载和市场条目仍指向已发布的 v0.1.0，不包含本次修正。
+**当前 main 开发版本：v0.1.2（尚未发布安装包）**。键盘焦点范围修正与设置倍率布局优化仅包含在当前源码中；下方下载和市场条目仍指向已发布的 v0.1.0，不包含这些更新。
 
 ## 功能
 
@@ -73,6 +73,8 @@ dsh plugin --profile desktop add "dsh-plugin-chat-zoom@file:C:/Downloads/dsh-plu
 ### 设置页
 
 进入 **设置 → 缩放**：
+
+从 main 的 v0.1.2 起，顶部明确标出“仅缩放聊天消息与输入区”；倍率区域单独显示当前百分比和范围。“选择倍率、缩小、放大”为主要调整区，“恢复 100%、清除倍率记忆”另列一组，保留原生按钮与选择框，不添加尚未实现的快捷键配置。控件可随可用宽度换行；真实 DSH 窄屏布局和键盘操作尚未实机验收。
 
 | 控件 | 作用 |
 | --- | --- |
@@ -154,7 +156,7 @@ npm pack --ignore-scripts
 
 Additional documents: [Changelog](CHANGELOG.md) · [Privacy](PRIVACY.md) · [Contributing](CONTRIBUTING.md) · [Market and merge notes](MARKET.md). These documents were added on main after release; the original v0.1.0 tag and archive remain unchanged. Submission does not mean admission.
 
-**Current main development version: v0.1.1 (no released package yet).** The keyboard focus fix is in the current source only. The downloads below and the market entry still point to published v0.1.0, which does not contain this fix.
+**Current main development version: v0.1.2 (no released package yet).** The keyboard focus fix and settings layout improvements are in the current source only. The downloads below and the market entry still point to published v0.1.0, which does not contain these updates.
 
 ### Features
 
@@ -212,6 +214,8 @@ Download and extract the source archive, or clone this repository. In the DSH Pl
 ### Usage
 
 Open **Settings → 缩放 (Zoom)**:
+
+Starting with v0.1.2 on main, the scope notice states that only chat messages and the input area are zoomed. A separate percentage display shows the current level and range. Select/zoom-out/zoom-in controls form the primary group; reset/clear-memory controls form a separate group. All remain native buttons/selects, with no nonfunctional shortcut-configuration fields. Controls can wrap with available width; actual narrow-host layout and keyboard operation have not been verified on a real DSH host.
 
 | Chinese UI label | Meaning |
 | --- | --- |
