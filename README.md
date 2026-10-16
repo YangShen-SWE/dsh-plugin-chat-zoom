@@ -13,7 +13,7 @@ DeepSeek Harness（DSH）聊天区域缩放插件。仅缩放聊天消息和输�
 
 补充文档：[更新说明](CHANGELOG.md) · [隐私说明](PRIVACY.md) · [贡献与维护](CONTRIBUTING.md) · [市场投稿与合并注意事项](MARKET.md)。这些文档后补于 main；既有 v0.1.0 安装包与 tag 保持不变。市场投稿不等于已收录。
 
-**当前 main 开发版本：v0.1.3（尚未发布安装包）**。键盘焦点范围修正、设置布局与操作反馈优化仅包含在当前源码中；下方下载和市场条目仍指向已发布的 v0.1.0，不包含这些更新。
+**当前 main 开发版本：v0.1.4（尚未发布安装包）**。包含焦点/设置改进及快捷键配置校验、存储基础；配置尚未接入事件或设置，自定义手势暂不可用，现有 Ctrl 操作不变。下方下载和市场条目仍指向已发布的 v0.1.0，不包含开发更新。
 
 ## 功能
 
@@ -160,7 +160,7 @@ npm pack --ignore-scripts
 
 Additional documents: [Changelog](CHANGELOG.md) · [Privacy](PRIVACY.md) · [Contributing](CONTRIBUTING.md) · [Market and merge notes](MARKET.md). These documents were added on main after release; the original v0.1.0 tag and archive remain unchanged. Submission does not mean admission.
 
-**Current main development version: v0.1.3 (no released package yet).** The keyboard focus fix, settings layout and action-feedback improvements are in the current source only. The downloads below and the market entry still point to published v0.1.0, which does not contain these updates.
+**Current main development version: v0.1.4 (no released package yet).** Includes focus/settings improvements and keyboard validation/storage foundations, not yet wired to events or settings. Custom gestures are not available yet; existing Ctrl gestures are unchanged. Downloads and the market entry still point to published v0.1.0, without development changes.
 
 ### Features
 

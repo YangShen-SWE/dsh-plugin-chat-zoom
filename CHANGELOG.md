@@ -1,5 +1,19 @@
 # Changelog · 更新说明
 
+## v0.1.4 — Unreleased / 未发布（2026-10-16，D3 配置基础，提前执行）
+
+### 中文
+
+- **需求与实现**：新增无依赖的三动作单次快捷键配置模型、别名/修饰键顺序归一化、重复与危险绑定校验，以及独立本地存储的读写/恢复默认基础。Plus/Minus 的 Shift 别名视为同一绑定，避免重叠。无修饰键仅接受 F2/F8/F9，拒绝文字编辑键、连续序列和常见保留组合。
+- **交接与边界**：本次仅准备纯函数，未接入运行时读取、事件或设置 UI；现有 Ctrl 操作不变，不宣称自定义快捷键已经可用。下一部分须接线并新增事件/UI/存储失败测试后才交付新能力。旧倍率键不变；旧用户无需转换，缺失/无效/未来版本的配置回退默认，不自动改写存储。
+- **验证**：40/40 Node 轻量测试通过（含 6 项新配置/存储测试），宿主与客户端语法通过；无 DSH 实机、物理键盘/IME或浏览器保留键验证。没有创建 Release、更改既有 tag/安装包或市场 tarball。
+
+### English
+
+- Added a dependency-free, versioned three-action keyboard model, alias/modifier normalization, duplicate/reserved-key validation and local read/write/reset helpers. Shift aliases for Plus/Minus cannot overlap. Only F2/F8/F9 may be unmodified; text/editing keys, sequences and common reserved chords are rejected.
+- Foundation only: runtime reads, events and settings are not wired yet. Existing Ctrl gestures are unchanged. The next step must integrate and test the feature before claiming custom shortcuts work. The old percentage key stays intact; missing, invalid or future records default without silent writes.
+- 40/40 simulated Node tests and both syntax checks pass. Real DSH, physical keyboard/IME and browser shortcut behavior remain untested. No release, old tag/archive replacement or market tarball change.
+
 ## v0.1.3 — Unreleased / 未发布（2026-10-15，D2 晚间）
 
 ### 中文

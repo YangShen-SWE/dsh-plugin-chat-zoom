@@ -15,7 +15,7 @@ const sandbox = {
   } } }
 };
 vm.runInNewContext(clientSource.replace(factoryReturn,
-  '    return { mountChatZoom, createChatZoomClient };'), sandbox);
+  '    return { mountChatZoom, createChatZoomClient, normalizeBinding, validateKeyboardConfig, readKeyboardConfig, saveKeyboardConfig, clearKeyboardConfig, DEFAULT_KEYBOARD, KEYBOARD_STORAGE_KEY };'), sandbox);
 
 // Only selectors used by this plugin are modeled. No layout/browser fidelity is claimed.
 class Element {
@@ -362,6 +362,65 @@ test('settings separate primary adjustments from memory actions and retain wrap/
   assert.match(css, /\.chat-zoom-settings-summary \{[^}]*flex-wrap:wrap/);
   assert.match(css, /\.chat-zoom-settings-actions,[^{]*\{[^}]*flex-wrap:wrap/);
   assert.match(css, /\.chat-zoom-settings button:focus-visible/);
+});
+
+const keyboardConfig = (zoomIn = 'Alt+J', zoomOut = 'Alt+K', reset = 'F9') => ({ version:1, bindings:{ zoomIn, zoomOut, reset } });
+
+test('keyboard model normalizes modifier order, aliases and symbol Shift overlap', () => {
+  for (const [input, expected] of [[' control + = ', 'Ctrl+Plus'], ['Ctrl++', 'Ctrl+Plus'], ['shift+CTRL+Plus', 'Ctrl+Plus'], ['option+k', 'Alt+K'], ['cmd+0', 'Meta+0'], ['Shift+F8', 'Shift+F8'], ['F2', 'F2']]) {
+    assert.equal(api.normalizeBinding(input), expected);
+  }
+});
+
+test('keyboard model refuses typing, editing, browser, system and multi-step bindings', () => {
+  for (const input of ['A', '1', 'Shift+A', 'Shift+1', 'Enter', 'Space', 'Backspace', 'Delete', 'Escape', 'Tab', 'F1', 'F3', 'F4', 'F5', 'F11', 'F12', 'Ctrl+C', 'Ctrl+Shift+V', 'Meta+Q', 'Ctrl+R', 'Alt+F4', 'Alt+D', 'Ctrl+2', 'Meta+9', 'Ctrl+K Ctrl+J', 'Ctrl+Ctrl+Plus', '', null, {}, 'a'.repeat(81)]) {
+    assert.equal(api.normalizeBinding(input), null, String(input));
+  }
+});
+
+test('keyboard config rejects malformed, future and duplicate/overlapping configurations atomically', () => {
+  for (const value of [null, {}, { version:2, bindings:keyboardConfig().bindings }, { ...keyboardConfig(), extra:true }, { version:1, bindings:{} }, { version:1, bindings:[] }, keyboardConfig('Alt+J', 'option+j'), keyboardConfig('Ctrl+Plus', 'Ctrl+Shift+Equal'), keyboardConfig('Ctrl+R')]) {
+    assert.equal(api.validateKeyboardConfig(value).ok, false);
+  }
+  const result = api.validateKeyboardConfig(keyboardConfig());
+  assert.equal(result.ok, true);
+  assert.equal(JSON.stringify(result.config), JSON.stringify(keyboardConfig()));
+});
+
+test('missing or invalid keyboard records safely default without migrating away the old zoom key', t => {
+  const f = fixture(t);
+  f.storage.set('dsh-plugin-chat-zoom:v1:percent', '150');
+  for (const raw of [null, '{', 'null', '[]', JSON.stringify({ version:9, bindings:{} }), JSON.stringify(keyboardConfig('Ctrl+R'))]) {
+    if (raw === null) f.storage.delete(api.KEYBOARD_STORAGE_KEY);
+    else f.storage.set(api.KEYBOARD_STORAGE_KEY, raw);
+    assert.equal(JSON.stringify(api.readKeyboardConfig(f.win.localStorage)), JSON.stringify(api.DEFAULT_KEYBOARD));
+    assert.equal(f.storage.get('dsh-plugin-chat-zoom:v1:percent'), '150');
+    assert.equal(f.storage.get(api.KEYBOARD_STORAGE_KEY) ?? null, raw);
+  }
+});
+
+test('keyboard preferences round-trip, restore defaults and leave other preferences untouched', t => {
+  const f = fixture(t);
+  f.storage.set('dsh-plugin-chat-zoom:v1:percent', '130');
+  f.storage.set('unrelated', 'keep');
+  assert.equal(api.saveKeyboardConfig(f.win.localStorage, keyboardConfig()), true);
+  assert.equal(JSON.stringify(api.readKeyboardConfig(f.win.localStorage)), JSON.stringify(keyboardConfig()));
+  const saved = f.storage.get(api.KEYBOARD_STORAGE_KEY);
+  assert.equal(api.saveKeyboardConfig(f.win.localStorage, keyboardConfig('Ctrl+R')), false);
+  assert.equal(f.storage.get(api.KEYBOARD_STORAGE_KEY), saved);
+  assert.equal(api.clearKeyboardConfig(f.win.localStorage), true);
+  assert.equal(JSON.stringify(api.readKeyboardConfig(f.win.localStorage)), JSON.stringify(api.DEFAULT_KEYBOARD));
+  assert.equal(f.storage.get('dsh-plugin-chat-zoom:v1:percent'), '130');
+  assert.equal(f.storage.get('unrelated'), 'keep');
+});
+
+test('keyboard persistence tolerates absent and blocked storage without throwing', () => {
+  const blocked = { getItem() { throw new Error('blocked'); }, setItem() { throw new Error('blocked'); }, removeItem() { throw new Error('blocked'); } };
+  for (const storage of [null, undefined, blocked]) {
+    assert.equal(JSON.stringify(api.readKeyboardConfig(storage)), JSON.stringify(api.DEFAULT_KEYBOARD));
+    assert.equal(api.saveKeyboardConfig(storage, keyboardConfig()), false);
+    assert.equal(api.clearKeyboardConfig(storage), false);
+  }
 });
 
 const statusText = f => text(nodes(f.render(), node => node.props.role === 'status')[0]);
