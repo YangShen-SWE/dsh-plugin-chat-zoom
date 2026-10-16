@@ -269,10 +269,18 @@ function settingsFixture(t, supported = true) {
   f.win.CSS.supports = () => supported;
   sandbox.window = f.win;
   let Settings;
+  const hooks = [];
+  let cursor = 0;
+  let idCursor = 0;
   const React = {
     createElement: (type, props, ...children) => ({ type, props: props ?? {}, children: children.flat() }),
     useSyncExternalStore: (_subscribe, getSnapshot) => getSnapshot(),
-    useId: () => ':test-memory-description:'
+    useState(initial) {
+      const index = cursor++;
+      if (!(index in hooks)) hooks[index] = initial;
+      return [hooks[index], value => { hooks[index] = typeof value === 'function' ? value(hooks[index]) : value; }];
+    },
+    useId: () => `:test-description-${idCursor++}:`
   };
   api.createChatZoomClient(React).apply({
     effect: start => t.after(start()),
@@ -284,8 +292,8 @@ function settingsFixture(t, supported = true) {
       }
     }
   });
-  const render = () => Settings();
-  return { ...f, render };
+  const render = () => { cursor = 0; idCursor = 0; return Settings(); };
+  return { ...f, controller:f.win[Symbol.for('dsh-plugin-chat-zoom:instance')], render };
 }
 function nodes(tree, predicate) {
   if (!tree || typeof tree !== 'object') return [];
@@ -307,9 +315,9 @@ test('settings show current percentage, local scope and only implemented native 
   assert.match(text(tree), /范围 80%—200%，每档 10 个百分点。/);
   assert.equal(nodes(tree, node => node.props.role === 'group' && node.props['aria-label'] === '聊天倍率').length, 1);
   assert.equal(byType(tree, 'select').length, 1);
-  assert.equal(byType(tree, 'input').length, 0);
-  assert.deepEqual(byType(tree, 'button').map(text), ['缩小', '放大', '恢复 100%', '清除倍率记忆']);
-  assert.equal(nodes(tree, node => node.props.role === 'status' && node.props['aria-live'] === 'polite').length, 1);
+  assert.equal(byType(tree, 'input').length, 3);
+  assert.deepEqual(byType(tree, 'button').map(text), ['缩小', '放大', '恢复 100%', '清除倍率记忆', '保存快捷键', '恢复默认快捷键']);
+  assert.equal(nodes(tree, node => node.props.role === 'status' && node.props['aria-live'] === 'polite').length, 2);
 });
 
 test('settings selection, zoom buttons, reset and clear stay wired to the real controller', t => {
@@ -346,7 +354,7 @@ test('unsupported zoom keeps native settings controls disabled and the status vi
   const f = settingsFixture(t, false);
   const tree = f.render();
   for (const node of [...byType(tree, 'button'), ...byType(tree, 'select')]) assert.equal(node.props.disabled, true);
-  assert.match(text(nodes(tree, node => node.props.role === 'status')[0]), /不支持/);
+  assert.match(text(nodes(tree, node => node.props.role === 'status' && !node.props.id)[0]), /不支持/);
   assert.equal(text(byType(tree, 'output')[0]), '100%');
 });
 
@@ -357,7 +365,7 @@ test('settings separate primary adjustments from memory actions and retain wrap/
   const memory = nodes(tree, node => node.props.className === 'chat-zoom-settings-memory')[0];
   assert.deepEqual(byType(primary, 'button').map(text), ['缩小', '放大']);
   assert.deepEqual(byType(memory, 'button').map(text), ['恢复 100%', '清除倍率记忆']);
-  for (const control of byType(tree, 'button')) assert.equal(control.props.type, 'button');
+  for (const control of byType(tree, 'button')) assert.equal(control.props.type, text(control) === '保存快捷键' ? 'submit' : 'button');
   const css = f.doc.head.children[0].textContent;
   assert.match(css, /\.chat-zoom-settings-summary \{[^}]*flex-wrap:wrap/);
   assert.match(css, /\.chat-zoom-settings-actions,[^{]*\{[^}]*flex-wrap:wrap/);
@@ -423,14 +431,207 @@ test('keyboard persistence tolerates absent and blocked storage without throwing
   }
 });
 
-const statusText = f => text(nodes(f.render(), node => node.props.role === 'status')[0]);
+test('custom Alt letters and unmodified function key replace rather than extend default keyboard actions', t => {
+  const f = fixture(t);
+  assert.equal(f.controller.setKeyboardConfig(keyboardConfig()).ok, true);
+  f.doc.activeElement = f.textarea;
+  assert.equal(f.dispatch('keydown').defaultPrevented, false);
+  assert.equal(f.dispatch('keydown', { key:'j', ctrlKey:false, altKey:true }).defaultPrevented, true);
+  assert.equal(f.controller.percent, 110);
+  assert.equal(f.dispatch('keydown', { key:'k', ctrlKey:false, altKey:true }).defaultPrevented, true);
+  assert.equal(f.controller.percent, 100);
+  f.controller.setPercent(170);
+  assert.equal(f.dispatch('keydown', { key:'F9', ctrlKey:false }).defaultPrevented, true);
+  assert.equal(f.controller.percent, 100);
+});
+
+test('Shift, Meta and multi-modifier single chords require exact non-symbol modifiers', t => {
+  const f = fixture(t);
+  f.controller.setKeyboardConfig(keyboardConfig('Shift+F8', 'Meta+Minus', 'Ctrl+Alt+0'));
+  f.doc.activeElement = f.textarea;
+  assert.equal(f.dispatch('keydown', { key:'F8', ctrlKey:false }).defaultPrevented, false);
+  assert.equal(f.dispatch('keydown', { key:'F8', ctrlKey:false, shiftKey:true }).defaultPrevented, true);
+  assert.equal(f.controller.percent, 110);
+  assert.equal(f.dispatch('keydown', { key:'-', ctrlKey:false, metaKey:true }).defaultPrevented, true);
+  f.controller.setPercent(150);
+  assert.equal(f.dispatch('keydown', { key:'0', altKey:true }).defaultPrevented, true);
+  assert.equal(f.controller.percent, 100);
+});
+
+test('custom chords preserve IME, AltGraph, exact modifiers and uncancelable/default-prevented events', t => {
+  const f = fixture(t);
+  f.controller.setKeyboardConfig(keyboardConfig());
+  f.doc.activeElement = f.textarea;
+  const gesture = { key:'j', ctrlKey:false, altKey:true };
+  for (const extra of [{ isComposing:true }, { keyCode:229 }, { getModifierState:() => true }, { shiftKey:true }, { metaKey:true }, { defaultPrevented:true }, { cancelable:false }]) {
+    const event = f.dispatch('keydown', { ...gesture, ...extra });
+    assert.equal(event.stopped, undefined);
+    assert.equal(f.controller.percent, 100);
+  }
+  f.dispatch('compositionstart');
+  assert.equal(f.dispatch('keydown', gesture).defaultPrevented, false);
+  f.dispatch('compositionend');
+  assert.equal(f.dispatch('keydown', gesture).defaultPrevented, true);
+});
+
+test('custom bindings preserve strict focus, current hover, modal and embedded-tool exclusions', t => {
+  const f = fixture(t);
+  f.controller.setKeyboardConfig(keyboardConfig());
+  const gesture = { key:'j', ctrlKey:false, altKey:true };
+  f.dispatch('pointerover', { target:f.flow });
+  for (const name of ['button', 'link', 'send', 'file', 'checkbox', 'select', 'embedded', 'terminal', 'ignoredInput', 'sidebar', 'settings', 'flow', 'composer']) {
+    f.doc.activeElement = f[name];
+    assert.equal(f.dispatch('keydown', gesture).defaultPrevented, false, name);
+  }
+  f.doc.activeElement = f.body;
+  assert.equal(f.dispatch('keydown', gesture).defaultPrevented, true);
+  f.dispatch('pointerout', { relatedTarget:f.sidebar });
+  assert.equal(f.dispatch('keydown', gesture).defaultPrevented, false);
+  const modal = f.body.appendChild(new Element('dialog', { open:'' }));
+  f.doc.activeElement = f.textarea;
+  assert.equal(f.dispatch('keydown', gesture).defaultPrevented, false);
+  modal.hidden = true;
+  assert.equal(f.dispatch('keydown', gesture).defaultPrevented, true);
+});
+
+test('keyboard customizations leave Ctrl-wheel independent and consume configured keys at zoom limits', t => {
+  const f = fixture(t);
+  f.controller.setKeyboardConfig(keyboardConfig('F8', 'F9', 'F2'));
+  f.doc.activeElement = f.textarea;
+  for (const [key, percent] of [['F8', 200], ['F9', 80]]) {
+    f.controller.setPercent(percent);
+    assert.equal(f.dispatch('keydown', { key, ctrlKey:false }).defaultPrevented, true);
+    assert.equal(f.controller.percent, percent);
+  }
+  f.controller.setPercent(100);
+  assert.equal(f.dispatch('wheel', { target:f.flow, deltaY:-1 }).defaultPrevented, true);
+  assert.equal(f.controller.percent, 110);
+  assert.equal(f.dispatch('wheel', { target:f.flow, deltaY:-1, ctrlKey:false, altKey:true }).defaultPrevented, false);
+});
+
+test('saved custom bindings and old percentage restore on remount without modifying unrelated storage', t => {
+  const f = fixture(t);
+  f.controller.setPercent(150);
+  f.controller.setKeyboardConfig(keyboardConfig());
+  f.storage.set('unrelated', 'keep');
+  const active = api.mountChatZoom(f.win);
+  t.after(() => active.dispose());
+  assert.equal(active.percent, 150);
+  assert.equal(JSON.stringify(active.getSnapshot().keyboardConfig), JSON.stringify(keyboardConfig()));
+  f.doc.activeElement = f.textarea;
+  assert.equal(f.dispatch('keydown', { key:'j', ctrlKey:false, altKey:true }).defaultPrevented, true);
+  assert.equal(active.percent, 160);
+  assert.equal(f.storage.get('unrelated'), 'keep');
+});
+
+test('invalid future keyboard records default on mount while retaining the old percent and original record', t => {
+  const f = fixture(t);
+  f.storage.set('dsh-plugin-chat-zoom:v1:percent', '140');
+  const raw = JSON.stringify({ version:5, bindings:{} });
+  f.storage.set(api.KEYBOARD_STORAGE_KEY, raw);
+  const active = api.mountChatZoom(f.win);
+  t.after(() => active.dispose());
+  assert.equal(active.percent, 140);
+  assert.equal(JSON.stringify(active.getSnapshot().keyboardConfig), JSON.stringify(api.DEFAULT_KEYBOARD));
+  assert.equal(f.storage.get(api.KEYBOARD_STORAGE_KEY), raw);
+});
+
+function fillBindings(f, bindings) {
+  for (const [index, action] of ['zoomIn', 'zoomOut', 'reset'].entries()) {
+    byType(f.render(), 'input')[index].props.onChange({ target:{ value:bindings[action] } });
+  }
+}
+function submitBindings(f) { byType(f.render(), 'form')[0].props.onSubmit({ preventDefault() {} }); }
+const bindingStatus = f => text(nodes(f.render(), node => node.props.role === 'status' && node.props.id)[0]);
+
+test('native keyboard inputs keep unsaved drafts inactive then validate/save canonical config', t => {
+  const f = settingsFixture(t);
+  fillBindings(f, keyboardConfig('option+j', 'Alt+k', 'F9').bindings);
+  assert.match(bindingStatus(f), /未保存/);
+  assert.equal(f.storage.has(api.KEYBOARD_STORAGE_KEY), false);
+  assert.equal(f.controller.getSnapshot().keyboardConfig.bindings.zoomIn, 'Ctrl+Plus');
+  submitBindings(f);
+  assert.match(bindingStatus(f), /已生效并保存/);
+  assert.equal(byType(f.render(), 'input')[0].props.value, 'Alt+J');
+  assert.equal(JSON.parse(f.storage.get(api.KEYBOARD_STORAGE_KEY)).bindings.zoomIn, 'Alt+J');
+  f.doc.activeElement = f.textarea;
+  f.dispatch('keydown', { key:'j', ctrlKey:false, altKey:true });
+  assert.equal(f.controller.percent, 110);
+  for (const control of byType(f.render(), 'input')) {
+    assert.equal(control.props.onKeyDown, undefined);
+    assert.equal(control.props.autoFocus, undefined);
+    assert.equal(control.props.maxLength, 80);
+    for (const id of control.props['aria-describedby'].split(' ')) assert.equal(nodes(f.render(), node => node.props.id === id).length, 1);
+  }
+});
+
+test('duplicate or reserved UI input reports an error and never changes the active or stored config', t => {
+  const f = settingsFixture(t);
+  for (const config of [keyboardConfig('Alt+J', 'option+j'), keyboardConfig('Ctrl+R')]) {
+    fillBindings(f, config.bindings);
+    submitBindings(f);
+    assert.match(bindingStatus(f), /相同|不支持或不安全/);
+    assert.equal(byType(f.render(), 'input')[0].props['aria-invalid'], true);
+    assert.equal(f.storage.has(api.KEYBOARD_STORAGE_KEY), false);
+    assert.equal(f.controller.getSnapshot().keyboardConfig.bindings.zoomIn, 'Ctrl+Plus');
+  }
+});
+
+test('restoring keyboard defaults removes only the keyboard key and discards pending drafts', t => {
+  const f = settingsFixture(t);
+  fillBindings(f, keyboardConfig().bindings);
+  submitBindings(f);
+  f.controller.setPercent(130);
+  f.storage.set('unrelated', 'keep');
+  fillBindings(f, keyboardConfig('F8', 'F9', 'F2').bindings);
+  button(f.render(), '恢复默认快捷键').props.onClick();
+  assert.equal(byType(f.render(), 'input')[0].props.value, 'Ctrl+Plus');
+  assert.equal(f.storage.has(api.KEYBOARD_STORAGE_KEY), false);
+  assert.equal(f.storage.get('dsh-plugin-chat-zoom:v1:percent'), '130');
+  assert.equal(f.storage.get('unrelated'), 'keep');
+  assert.match(bindingStatus(f), /已恢复默认.*倍率不变/);
+  fillBindings(f, keyboardConfig().bindings);
+  submitBindings(f);
+  button(f.render(), '清除倍率记忆').props.onClick();
+  assert.equal(f.storage.has(api.KEYBOARD_STORAGE_KEY), true);
+});
+
+test('blocked keyboard writes/removals are session-only, report failures and retain truthful old records', t => {
+  const f = settingsFixture(t);
+  fillBindings(f, keyboardConfig().bindings);
+  submitBindings(f);
+  const saved = f.storage.get(api.KEYBOARD_STORAGE_KEY);
+  f.win.localStorage.setItem = () => { throw new Error('blocked'); };
+  f.win.localStorage.removeItem = () => { throw new Error('blocked'); };
+  fillBindings(f, keyboardConfig('F8', 'F9', 'F2').bindings);
+  submitBindings(f);
+  assert.match(bindingStatus(f), /本页已生效.*无法保存/);
+  assert.equal(f.controller.getSnapshot().keyboardConfig.bindings.zoomIn, 'F8');
+  assert.equal(f.storage.get(api.KEYBOARD_STORAGE_KEY), saved);
+  button(f.render(), '恢复默认快捷键').props.onClick();
+  assert.match(bindingStatus(f), /本页已生效.*无法删除/);
+  assert.equal(f.controller.getSnapshot().keyboardConfig.bindings.zoomIn, 'Ctrl+Plus');
+  assert.equal(f.storage.get(api.KEYBOARD_STORAGE_KEY), saved);
+});
+
+test('symbol aliases preserve Ctrl plus/equal/shift and numpad defaults', t => {
+  const f = fixture(t);
+  f.doc.activeElement = f.textarea;
+  for (const options of [{ key:'=' }, { key:'+', shiftKey:true }, { key:'=', shiftKey:true }, { key:'Add', code:'NumpadAdd' }]) {
+    f.controller.setPercent(100);
+    assert.equal(f.dispatch('keydown', options).defaultPrevented, true);
+    assert.equal(f.controller.percent, 110);
+  }
+});
+
+const statusText = f => text(nodes(f.render(), node => node.props.role === 'status' && !node.props.id)[0]);
 
 test('settings show an initial status without claiming a stored preference', t => {
   const f = settingsFixture(t);
   assert.match(statusText(f), /当前聊天倍率 100%/);
   assert.doesNotMatch(statusText(f), /已保存/);
   assert.equal(f.storage.size, 0);
-  assert.equal(nodes(f.render(), node => node.props.role === 'status')[0].props['aria-atomic'], 'true');
+  assert.equal(nodes(f.render(), node => node.props.role === 'status' && !node.props.id)[0].props['aria-atomic'], 'true');
   assert.equal(byType(f.render(), 'output')[0].props['aria-live'], 'off');
 });
 

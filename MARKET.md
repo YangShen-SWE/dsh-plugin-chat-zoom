@@ -18,6 +18,8 @@
 
 2026-10-14：main 开发版本已更新为 v0.1.1，修正键盘焦点范围，**尚未发布新安装包**。市场条目仍保留有效的 v0.1.0 tarball 和对应功能描述；本次不将下载指向不存在的 v0.1.1 资产，不重复投稿或触发合并。具体修正及模拟测试限制见 [更新说明](CHANGELOG.md)。
 
+2026-10-16：main 已完成自定义键盘组合并递增为 **v0.2.0（未发布）**，支持设置保存、恢复默认及独立本地键盘配置，默认和 Ctrl 滚轮保持兼容。市场 v0.1.0 tarball 未包含这些变化；在真实新包发布前，不修改其版本/描述以冒充已可安装，不新增重复 PR。验证范围和未验实机场景见 [更新说明](CHANGELOG.md)。
+
 ### 仓库年龄门槛
 
 GitHub 仓库创建于 **2026-10-13 18:44:31 UTC**。满一天的最早时间为 **2026-10-14 18:44:31 UTC**（丹麦当地时间 20:44:31，UTC+02:00）。提交时尚未满一天，PR 不应勾选“已满一天”。
@@ -47,6 +49,8 @@ Follow the upstream [contribution guide](https://github.com/awesome-dsh-plugin/a
 The tarball URL pins v0.1.0. A versioned filename must not be used under `latest/download/`. Do not move the existing tag or replace its asset. SHA-256: `908b0eca7bf91b4528a125f29b05a0590901ee29ad3fcb98f7afddb381510222`. Additional main-branch documentation is not claimed to be inside the original archive.
 
 2026-10-14: main is now development version v0.1.1 with a keyboard-focus fix; **no new package has been released**. Keep the valid v0.1.0 market tarball and matching feature description. Do not point to a nonexistent v0.1.1 asset, resubmit, or trigger a merge. See the [changelog](CHANGELOG.md) for the fix and simulated-test limitations.
+
+2026-10-16: main now completes custom keyboard chords as **v0.2.0 (unreleased)**, including settings save/default reset and separate local keyboard preferences. Default keyboard and Ctrl wheel remain compatible. The market's v0.1.0 archive does not contain these changes: do not advertise an installable upgrade or open a duplicate PR before a real new release. See the [changelog](CHANGELOG.md) for test scope and unverified real-host cases.
 
 **Age gate:** created 2026-10-13 18:44:31 UTC; eligible no earlier than 2026-10-14 18:44:31 UTC (20:44:31 in Denmark). Do not tick the one-day checkbox before that time. The current checker measures age when it runs; age-only failures can be rechecked upstream. No duplicate PR, close/reopen, empty push, fake date or gate bypass is needed. Scheduled rechecks have a queue and cooldown; eligibility does not guarantee an immediate green result.
 

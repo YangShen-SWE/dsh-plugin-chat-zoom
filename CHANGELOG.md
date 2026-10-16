@@ -1,5 +1,21 @@
 # Changelog · 更新说明
 
+## v0.2.0 — Unreleased / 未发布（2026-10-16，D3 接线，提前执行）
+
+### 中文
+
+- **需求与实现**：将 v0.1.4 模型接入真实控制器、严格聊天焦点事件和原生设置表单。放大/缩小/复位支持单次组合（Ctrl/Alt/Shift/Meta 或 F2/F8/F9），可输入、校验、保存及恢复默认；未保存的输入不生效，错误不会覆盖当前配置。默认 Ctrl+Plus / Ctrl+Minus / Ctrl+0 保持兼容，小键盘及 Plus/Minus Shift 别名不产生重复。完整新能力按当前版本从 0.1.4 递增 MINOR 为 0.2.0。
+- **存储与隔离**：只用当前来源的 `dsh-plugin-chat-zoom:v1:keyboard` 保存版本号和三条绑定，独立于原倍率键。缺失/无效/未来格式回退默认而不自动改写；保存或删除失败明确标注仅本页生效。恢复默认快捷键不改倍率，清除倍率不改快捷键。不新增网络、依赖或权限；不改变轮滚 Ctrl 规则，不接管普通文字/编辑键、IME、AltGraph、弹窗或消息控件焦点。
+- **使用与限制**：设置 → 缩放 → 键盘快捷键，例如 Alt+J / Alt+K / F9，点击“保存快捷键”。Plus/Minus 的 Shift 被归一化；只支持文档列出的主键，拒绝常见浏览器/编辑保留组合。不能枚举或覆盖所有 OS/宿主冲突；宿主先截获时换绑定或用倍率控件。不会修改宿主保留键，也不扩大到全局缩放。
+- **验证**：52/52 Node 模拟 DOM/虚拟 React/配置测试通过，含 12 项新事件、设置保存/校验、恢复、旧存储与写入失败测试；宿主/客户端语法、共享模块、双语文档链接、10 文件 dry-run 清单通过。曾发现旧测试假设所有按钮均为 type=button，已改为只允许真实表单保存按钮 submit，其余保持 button。真实 DSH 布局、物理键盘、系统/宿主快捷键、IME 与读屏未验收。未创建 Release、改旧 tag/包或替换市场 tarball。
+
+### English
+
+- Wired the v0.1.4 model into the controller, scoped key events and native settings form. Edit, validate, save or restore three single chords using Ctrl/Alt/Shift/Meta or unmodified F2/F8/F9. Drafts stay inactive; invalid input leaves active/stored bindings intact. Defaults and numpad/symbol aliases remain compatible. This completed user-facing capability increments 0.1.4 to minor version 0.2.0.
+- Store only the schema version and three binding strings in origin-local `dsh-plugin-chat-zoom:v1:keyboard`, independent of the unchanged percentage key. Missing/invalid/future records default without silent writes. Failed writes/removals explicitly report session-only changes. Reset shortcuts preserves the level; clear zoom preserves shortcuts. No network, dependencies, permissions, wheel changes or wider focus capture.
+- In Settings → 缩放 → 键盘快捷键, try Alt+J / Alt+K / F9 and save. Plus/Minus Shift aliases normalize to one chord. Only documented keys are accepted; common reserved editing/browser chords are rejected. OS/host conflicts cannot all be detected or overridden: choose another chord or use level controls. IME, AltGraph, dialogs and focused chat controls are excluded.
+- 52/52 simulated Node tests, both syntax checks, module/metadata/bilingual-link checks and the 10-file dry-run package check pass. An old all-buttons-are-button assertion was updated to allow only the real form's save button to submit. Real DSH layout, physical keys, OS/host conflicts, IME and screen readers are not verified. No release, old tag/archive change or market tarball replacement.
+
 ## v0.1.4 — Unreleased / 未发布（2026-10-16，D3 配置基础，提前执行）
 
 ### 中文

@@ -1,10 +1,10 @@
 {
   "name": "dsh-plugin-chat-zoom",
-  "version": "0.1.4",
+  "version": "0.2.0",
   "homepage": "https://github.com/YangShen-SWE/dsh-plugin-chat-zoom#readme",
   "repository": { "type": "git", "url": "git+https://github.com/YangShen-SWE/dsh-plugin-chat-zoom.git" },
   "bugs": { "url": "https://github.com/YangShen-SWE/dsh-plugin-chat-zoom/issues" },
-  "description": "缩放：Ctrl 调整聊天倍率，设置内控制，操作后提示 5 秒。",
+  "description": "缩放：自定义键盘组合与 Ctrl 滚轮调整聊天倍率，原生设置控制，提示 5 秒。",
   "type": "module",
   "license": "MIT",
   "exports": { ".": "./index.js", "./client": "./lib/client.js", "./package.json": "./package.json" },

@@ -2,24 +2,24 @@
 
 ## 中文
 
-本说明适用于 `dsh-plugin-chat-zoom` v0.1.0 及当前 main 的插件运行时，不涵盖 DSH 宿主、GitHub 下载或其他插件。main 的 v0.1.4 未发布；新增快捷键配置纯函数基础，格式为版本号与三个动作绑定字符串，预留本地键 `dsh-plugin-chat-zoom:v1:keyboard`。本阶段尚未接入运行时，不读取或写入该新键，无需迁移旧倍率数据；它明确保证“恢复 100%”在当前已为 100% 时也尝试保存该值。“清除倍率记忆”删除该键，后续调整或恢复会重新保存；保存或删除失败会显示状态提示。存储键、数据类型和权限不变；这些改进不属于原 v0.1.0 安装包。
+本说明区分已发布 v0.1.0 与当前 main 的 **v0.2.0（未发布）**；不涵盖 DSH 宿主、GitHub 下载或其他插件。main 的开发变化不属于旧 v0.1.0 安装包。
 
-- **保存什么**：只保存聊天倍率（80–200 的整数），键名为 `dsh-plugin-chat-zoom:v1:percent`，位置是当前浏览器来源的 `localStorage`。不跨设备同步，也不按聊天会话保存。
-- **如何使用页面**：读取聊天 DOM 结构、焦点和布局位置，监听相关键盘与滚轮事件，调整聊天消息和输入区的 CSS `zoom`。不把聊天内容提取到持久存储，不修改聊天记录或草稿数据。宿主入口不执行服务端功能。
-- **网络与权限**：插件自身不请求网络，不调用模型，不读取账户凭据，不写服务端配置，不收集遥测；没有安装生命周期脚本。安装包下载与 DSH 插件管理可能使用网络。
-- **清除与卸载**：先使用“设置 → 缩放 → 清除倍率记忆”，再禁用或卸载。正常停用移除插件自有监听器、提示、样式和倍率标记，但默认保留倍率偏好。必要时刷新或完整重启 DSH；不要清空整个 `localStorage`。
-- **存储不可用**：在禁止本地存储的环境中，本页操作可用，但刷新后不保证恢复倍率。
+- **保存什么**：v0.1.0 及 main 都在当前浏览器来源的 `localStorage` 保存聊天倍率（80–200 的整数），键名 `dsh-plugin-chat-zoom:v1:percent`。main 另以 `dsh-plugin-chat-zoom:v1:keyboard` 保存 JSON：版本号 `1` 与放大、缩小、复位的三个规范化绑定字符串；不保存按键日志、聊天内容、账号或设备标识。不跨设备、标签页实时同步，也不按会话保存。
+- **兼容与异常**：没有键盘配置时使用默认绑定，不改原倍率记录。无效或未来格式回退默认，不静默覆盖原记录。设置保存后本页即生效；本地写入/删除失败会明确提示，刷新后可能恢复此前存储值。倍率恢复至 100% 会保存该数值；后续调整会重新保存倍率。
+- **如何使用页面**：读取聊天 DOM、焦点及布局位置，监听受范围限制的键盘和滚轮事件，调整消息与输入区的 CSS `zoom`。不把聊天内容复制到持久存储，不修改聊天记录或草稿数据。宿主入口不执行服务端功能。
+- **网络与权限**：插件自身不请求网络，不调用模型，不读取凭据，不写服务端配置，不收集遥测；没有安装生命周期脚本。安装包下载与 DSH 插件管理可能使用网络。
+- **清除与卸载**：main 中先在“设置 → 缩放”点击“恢复默认快捷键”（删除键盘配置，倍率不变），再点击“清除倍率记忆”（恢复 100% 并删除倍率键，快捷键不变），然后禁用/卸载。v0.1.0 只有倍率键可清除。正常停用移除自有监听器、提示、样式与倍率标记，但默认保留偏好；必要时刷新或完整重启 DSH。失败反馈不得当作清除成功；不要清空整个 `localStorage`。
 
-报告问题时请勿上传私人聊天、账号、令牌或完整个人配置。只提供宿主/浏览器版本、复现步骤及必要的脱敏界面信息：[Issues](https://github.com/YangShen-SWE/dsh-plugin-chat-zoom/issues)。
+报告问题时请勿上传私人聊天、账号、令牌或完整个人配置。只提供宿主/浏览器版本、步骤及必要的脱敏信息：[Issues](https://github.com/YangShen-SWE/dsh-plugin-chat-zoom/issues)。
 
 ## English
 
-This statement covers the plugin runtime in v0.1.0 and current main, not the DSH host, GitHub downloads, or other plugins. Unreleased v0.1.4 adds keyboard helper functions (version plus three binding strings) for the separate local key `dsh-plugin-chat-zoom:v1:keyboard`. These helpers are not yet wired into runtime reads/writes; existing percentage data needs no migration. Current main explicitly attempts to save 100% on reset even when the current value is already 100%. Clear removes the key; a later adjustment or reset saves it again. Failed writes/removals are reported in status text. The key, data type and permissions are unchanged. These improvements are not in the original v0.1.0 archive.
+This statement distinguishes published v0.1.0 from **v0.2.0 on main (unreleased)**. It excludes the DSH host, GitHub downloads and other plugins. Main's changes are not in the original v0.1.0 archive.
 
-- **Stored data:** only an integer zoom percentage (80–200), under `dsh-plugin-chat-zoom:v1:percent` in the current browser origin's `localStorage`. No device sync or per-chat records.
-- **Page access:** inspect chat DOM structure, focus and layout; listen for scoped keyboard/wheel events; apply CSS `zoom` to messages and the input area. Chat text is not copied into persistent storage. Chat records and draft data are not edited. The host entry is inert.
-- **Network and permissions:** no plugin network requests, model calls, credential access, server configuration writes, telemetry, or install lifecycle scripts. Package downloads and DSH plugin management may use the network.
-- **Removal:** use Settings → 缩放 → 清除倍率记忆 before disabling or uninstalling. Normal cleanup removes owned listeners, hints, styles and zoom markers, but keeps the saved preference by default. Refresh or fully restart DSH if needed. Do not clear all local storage.
-- **Blocked storage:** zoom can still work for the current page, but the preference may not survive a refresh.
+- **Stored data:** both versions store an integer percentage (80–200) in origin-local `localStorage`, under `dsh-plugin-chat-zoom:v1:percent`. Main also stores JSON under `dsh-plugin-chat-zoom:v1:keyboard`: schema version `1` and three normalized binding strings for zoom in, zoom out and reset. No key logs, chats, accounts or device IDs. No cross-device/live-tab sync or per-chat records.
+- **Compatibility/failures:** missing keyboard preferences use defaults without changing the old percentage record. Invalid/future records default without silent overwrite. Saved settings apply for this page even if storage fails; explicit feedback warns that a refresh may restore previously stored values. Resetting the level saves 100%; later adjustments save the level again.
+- **Page access:** inspect scoped chat DOM, focus and layout; listen for scoped keyboard/wheel events; apply CSS `zoom` to messages and the composer. Chat text is not copied into persistent storage. Chat records and draft data are not edited. The host entry is inert.
+- **Network/permissions:** no plugin network requests, model calls, credential access, server configuration writes, telemetry or install lifecycle scripts. Package downloads and DSH plugin management may use the network.
+- **Removal:** on main, first use Settings → 缩放 → 恢复默认快捷键 to remove the keyboard key without changing the level, then 清除倍率记忆 to reset/remove the percentage without changing bindings; disable or uninstall afterward. v0.1.0 stores only the percentage. Cleanup removes owned listeners, hints, styles and markers but normally retains preferences. Refresh/restart if needed. A failure message is not proof of deletion; do not clear all local storage.
 
-Do not include private chats, accounts, tokens or full personal configurations in [issue reports](https://github.com/YangShen-SWE/dsh-plugin-chat-zoom/issues). Share host/browser versions, steps and only necessary redacted UI details.
+Do not share private chats, accounts, tokens or full personal configurations in [issue reports](https://github.com/YangShen-SWE/dsh-plugin-chat-zoom/issues). Include versions, steps and only necessary redacted details.
