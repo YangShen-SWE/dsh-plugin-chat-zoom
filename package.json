@@ -1,6 +1,6 @@
 {
   "name": "dsh-plugin-chat-zoom",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "homepage": "https://github.com/YangShen-SWE/dsh-plugin-chat-zoom#readme",
   "repository": { "type": "git", "url": "git+https://github.com/YangShen-SWE/dsh-plugin-chat-zoom.git" },
   "bugs": { "url": "https://github.com/YangShen-SWE/dsh-plugin-chat-zoom/issues" },
@@ -12,5 +12,5 @@
     "bundle": { "patch": "./cordis.patch.yml" },
     "client": { "platform": "web", "inject": ["@deepseek-ai/dsh-client-ui-conversation", "@deepseek-ai/dsh-client-ui-chat", "@deepseek-ai/dsh-client-ui-settings-general"] }
   },
-  "files": ["index.js", "lib/client.js", "cordis.patch.yml", "README.md", "CHANGELOG.md", "PRIVACY.md", "CONTRIBUTING.md", "MARKET.md", "LICENSE"]
+  "files": ["index.js", "lib/client.js", "cordis.patch.yml", "README.md", "CHANGELOG.md", "PRIVACY.md", "CONTRIBUTING.md", "MARKET.md", "LICENSE", "screenshots.json", "assets/chat-zoom-demo-150.png", "assets/chat-zoom-demo-100.png"]
 }

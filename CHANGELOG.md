@@ -1,5 +1,19 @@
 # Changelog · 更新说明
 
+## v0.2.1 — Unreleased / 未发布（2026-10-16，市场展示资料）
+
+### 中文
+
+- **需求**：为原市场 PR 补充可直接展示的双语短简介及示例图片，便于上架后的详情页展示，不重复投稿。
+- **实现**：新增两个已发布 v0.1.0 的隔离浏览器演示图（150% / 100%），在根目录 `screenshots.json` 声明顺序，README 内展示并注明来源。使用校验过 SHA-256 的原始发布包与合成 DOM/示例内容，由 Chrome 155 无头模式运行未修改客户端后截图；所有图片明确标注“非 DSH 实机截图”，不展示未发布快捷键能力。精简原市场 YAML 双语描述；不编辑市场生成数据或其他条目。
+- **版本与验证**：展示/文档更新从 0.2.0 递增 PATCH 为 0.2.1，运行时代码与本地存储行为不变。52 项模拟测试、语法、模块/相对文档链接、图片签名/尺寸、声明路径及 13 文件 dry-run 包清单检查通过；已目视核对两张图。浏览器隔离演示不等于 DSH 宿主、物理输入、IME 或读屏验收。仍无新 Release，市场继续使用原 v0.1.0 包。
+
+### English
+
+- Added a short bilingual market description and two storefront demo images (150% / 100%), declared in root `screenshots.json` and shown in the README. Updated only this plugin's existing market entry/PR.
+- Images use the unchanged, SHA-256-verified v0.1.0 release client inside synthetic sample DOM/content, rendered by headless Chrome 155. Each image is visibly labelled an isolated demo, **not a DSH-host screenshot**. No unreleased shortcut UI is advertised. No runtime/storage changes; this documentation/media update increments PATCH from 0.2.0 to 0.2.1.
+- 52 simulated tests, syntax, shared module/docs links, PNG signature/dimensions, declaration paths and the 13-file dry-run package check pass; both images were visually checked. Isolated rendering is not real DSH, physical-input, IME or screen-reader acceptance. No new release or old archive change; the market still installs v0.1.0.
+
 ## v0.2.0 — Unreleased / 未发布（2026-10-16，D3 接线，提前执行）
 
 ### 中文

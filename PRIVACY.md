@@ -2,7 +2,7 @@
 
 ## 中文
 
-本说明区分已发布 v0.1.0 与当前 main 的 **v0.2.0（未发布）**；不涵盖 DSH 宿主、GitHub 下载或其他插件。main 的开发变化不属于旧 v0.1.0 安装包。
+本说明区分已发布 v0.1.0 与当前 main 的 **v0.2.1（未发布）**；不涵盖 DSH 宿主、GitHub 下载或其他插件。main 的开发变化不属于旧 v0.1.0 安装包。
 
 - **保存什么**：v0.1.0 及 main 都在当前浏览器来源的 `localStorage` 保存聊天倍率（80–200 的整数），键名 `dsh-plugin-chat-zoom:v1:percent`。main 另以 `dsh-plugin-chat-zoom:v1:keyboard` 保存 JSON：版本号 `1` 与放大、缩小、复位的三个规范化绑定字符串；不保存按键日志、聊天内容、账号或设备标识。不跨设备、标签页实时同步，也不按会话保存。
 - **兼容与异常**：没有键盘配置时使用默认绑定，不改原倍率记录。无效或未来格式回退默认，不静默覆盖原记录。设置保存后本页即生效；本地写入/删除失败会明确提示，刷新后可能恢复此前存储值。倍率恢复至 100% 会保存该数值；后续调整会重新保存倍率。
@@ -14,7 +14,7 @@
 
 ## English
 
-This statement distinguishes published v0.1.0 from **v0.2.0 on main (unreleased)**. It excludes the DSH host, GitHub downloads and other plugins. Main's changes are not in the original v0.1.0 archive.
+This statement distinguishes published v0.1.0 from **v0.2.1 on main (unreleased)**. It excludes the DSH host, GitHub downloads and other plugins. Main's changes are not in the original v0.1.0 archive.
 
 - **Stored data:** both versions store an integer percentage (80–200) in origin-local `localStorage`, under `dsh-plugin-chat-zoom:v1:percent`. Main also stores JSON under `dsh-plugin-chat-zoom:v1:keyboard`: schema version `1` and three normalized binding strings for zoom in, zoom out and reset. No key logs, chats, accounts or device IDs. No cross-device/live-tab sync or per-chat records.
 - **Compatibility/failures:** missing keyboard preferences use defaults without changing the old percentage record. Invalid/future records default without silent overwrite. Saved settings apply for this page even if storage fails; explicit feedback warns that a refresh may restore previously stored values. Resetting the level saves 100%; later adjustments save the level again.

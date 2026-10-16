@@ -13,7 +13,23 @@ DeepSeek Harness（DSH）聊天区域缩放插件。仅缩放聊天消息和输�
 
 补充文档：[更新说明](CHANGELOG.md) · [隐私说明](PRIVACY.md) · [贡献与维护](CONTRIBUTING.md) · [市场投稿与合并注意事项](MARKET.md)。这些文档后补于 main；既有 v0.1.0 安装包与 tag 保持不变。市场投稿不等于已收录。
 
-**当前 main 开发版本：v0.2.0（尚未发布安装包）**。已接入自定义放大/缩小/复位键盘组合、原生设置输入、保存/恢复默认与本地配置；默认仍为 Ctrl，滚轮仍固定 Ctrl。下方下载和市场条目仍安装 v0.1.0，不包含本周开发更新；新能力当前仅在 main 源码中。
+**当前 main 开发版本：v0.2.1（尚未发布安装包）**。已接入自定义放大/缩小/复位键盘组合、原生设置输入、保存/恢复默认与本地配置；默认仍为 Ctrl，滚轮仍固定 Ctrl。下方下载和市场条目仍安装 v0.1.0，不包含本周开发更新；新能力当前仅在 main 源码中。
+
+## 简介与示例图（已发布 v0.1.0）
+
+**仅缩放 DSH 聊天消息和输入区（80%–200%），支持 Ctrl 快捷键、设置调节与本地记忆，不缩放侧栏。**
+
+下图是用 **v0.1.0 原客户端**在合成示例页面中运行后截取的浏览器隔离演示，**不是 DSH 实机截图，也不证明宿主兼容性**。示例文字、侧栏和输入区均为合成内容，不包含用户会话；未展示 main 中尚未发布的自定义快捷键界面。市场图片由根目录 [screenshots.json](screenshots.json) 声明，需市场合并及采集后才可能显示，不保证立即出现。
+
+**放大演示**：消息、代码、图示与输入区放大，示例侧栏及顶部尺寸不变。
+
+![150% 局部缩放隔离演示，非 DSH 实机截图](assets/chat-zoom-demo-150.png)
+
+**默认倍率对照**：使用同一演示布局，便于比较作用范围。
+
+![100% 默认倍率隔离演示，非 DSH 实机截图](assets/chat-zoom-demo-100.png)
+
+图片依据原 v0.1.0 安装包（SHA-256：`908b0eca7bf91b4528a125f29b05a0590901ee29ad3fcb98f7afddb381510222`），使用 Chrome 155 无头浏览器、固定视口及示例输入事件生成；原客户端代码未修改。它们只展示已发布版本的局部缩放行为，不替代真实 DSH 验收。
 
 ## 功能
 
@@ -91,7 +107,7 @@ dsh plugin --profile desktop add "dsh-plugin-chat-zoom@file:C:/Downloads/dsh-plu
 
 ### 快捷键（下表为默认绑定）
 
-main v0.2.0 的 **设置 → 缩放 → 键盘快捷键** 提供放大、缩小、复位三个输入框。输入组合后点击“保存快捷键”，例如分别设为 `Alt+J`、`Alt+K`、`F9`；只有保存后的绑定生效，新的键盘绑定替换而非叠加旧默认。滚轮独立，暂仍为 Ctrl，不支持本次配置。
+main v0.2.1 的 **设置 → 缩放 → 键盘快捷键** 提供放大、缩小、复位三个输入框。输入组合后点击“保存快捷键”，例如分别设为 `Alt+J`、`Alt+K`、`F9`；只有保存后的绑定生效，新的键盘绑定替换而非叠加旧默认。滚轮独立，暂仍为 Ctrl，不支持本次配置。
 
 - 使用单次组合，以 `+` 连接 `Ctrl` / `Alt` / `Shift` / `Meta` 与主键。主键支持 `Plus`（`+` / `=`）、`Minus`（`-`）、数字、A–Z 和 F2/F8/F9，但须通过下面的安全限制。`Control`、`Option`、`Cmd` / `Command` 分别是 Ctrl、Alt、Meta 的别名，修饰键顺序和字母大小写会归一化。
 - 无修饰键或仅 Shift 时只允许 F2/F8/F9；字母仅允许含 Alt 且不含 Ctrl/Meta，保守拒绝 Alt+B/D/E/F/H/T 等菜单组合。Ctrl/Meta+数字 1–9、普通文字/编辑键、F1/F3/F4/F5/F11/F12、常见保留键、连续序列和重复绑定不可用。Ctrl/Meta+0 和符号键可用。Plus/Minus 忽略 Shift 差异，不能借此配置重叠动作；其他修饰键必须准确匹配。示例不是跨系统无冲突保证。
@@ -109,7 +125,7 @@ main v0.2.0 的 **设置 → 缩放 → 键盘快捷键** 提供放大、缩小�
 
 ## 隐私与卸载
 
-插件自身不发送网络请求、不上传聊天、不收集遥测，不写服务端设置。v0.1.0 只保存倍率键 `dsh-plugin-chat-zoom:v1:percent`；main v0.2.0 另保存 `dsh-plugin-chat-zoom:v1:keyboard`（版本号与三个绑定字符串），均位于当前浏览器来源的 localStorage。缺失/无效键盘配置使用默认，不迁走旧倍率或自动覆盖异常记录；不保存按键日志，不跨设备/实时跨标签同步，也不按会话保存。
+插件自身不发送网络请求、不上传聊天、不收集遥测，不写服务端设置。v0.1.0 只保存倍率键 `dsh-plugin-chat-zoom:v1:percent`；main v0.2.1 另保存 `dsh-plugin-chat-zoom:v1:keyboard`（版本号与三个绑定字符串），均位于当前浏览器来源的 localStorage。缺失/无效键盘配置使用默认，不迁走旧倍率或自动覆盖异常记录；不保存按键日志，不跨设备/实时跨标签同步，也不按会话保存。
 
 如需移除记录，main 中先点击 **设置 → 缩放 → 恢复默认快捷键**，再点击 **清除倍率记忆**，检查状态无失败后再到插件页禁用或卸载；v0.1.0 只需清除倍率记忆。正常停用会移除插件自有监听器、倍率标记、提示和样式；可能需要刷新或重启。默认停用保留倍率记录，**不要为了清理倍率而清空整个 localStorage**。
 
@@ -166,7 +182,13 @@ npm pack --ignore-scripts
 
 Additional documents: [Changelog](CHANGELOG.md) · [Privacy](PRIVACY.md) · [Contributing](CONTRIBUTING.md) · [Market and merge notes](MARKET.md). These documents were added on main after release; the original v0.1.0 tag and archive remain unchanged. Submission does not mean admission.
 
-**Current main development version: v0.2.0 (no released package yet).** Custom zoom-in/out/reset chords, native settings inputs, validation, save/default reset and local keyboard preferences are wired in main. Defaults still use Ctrl; wheel zoom still requires Ctrl. Downloads and the market entry install v0.1.0 without this week's source-only development changes.
+**Current main development version: v0.2.1 (no released package yet).** Custom zoom-in/out/reset chords, native settings inputs, validation, save/default reset and local keyboard preferences are wired in main. Defaults still use Ctrl; wheel zoom still requires Ctrl. Downloads and the market entry install v0.1.0 without this week's source-only development changes.
+
+### Short description and demo images (released v0.1.0)
+
+**Zoom only DSH chat messages and input (80%–200%) using Ctrl shortcuts or settings, with local memory and no sidebar scaling.**
+
+See the [150% demo](assets/chat-zoom-demo-150.png) and [100% comparison](assets/chat-zoom-demo-100.png) above. These are **isolated browser demos, not DSH-host screenshots or host-compatibility tests**. The unchanged, SHA-256-verified v0.1.0 client runs in synthetic sample DOM/content using headless Chrome 155. No private conversations or unreleased keyboard-settings UI are shown. Root [screenshots.json](screenshots.json) declares the images for market ingestion; display depends on merging and the market's collection process, not an immediate guarantee.
 
 ### Features
 
@@ -240,7 +262,7 @@ Starting with v0.1.3 on main, the settings status shows the initial level, actio
 
 Settings use native keyboard controls: `Tab` / `Shift+Tab` move focus, arrow keys select a level, and `Enter` or Space activates buttons. Chat zoom shortcuts are not required. Main's 恢复默认快捷键 resets only the three keyboard bindings, not the level. Reset/clear buttons reference the same explanatory text, and the status uses polite announcements. Simulated-tree/event checks pass, but real Tab order, browser-specific select behavior and screen-reader announcements still require real-host acceptance.
 
-### Custom keyboard shortcuts (main v0.2.0 only; table below shows defaults)
+### Custom keyboard shortcuts (main v0.2.1 only; table below shows defaults)
 
 In **Settings → 缩放 → 键盘快捷键**, enter zoom-in, zoom-out and reset chords, then click **保存快捷键** (Save). For example: `Alt+J`, `Alt+K`, `F9`. Drafts do not apply until saved. Saved chords replace, rather than add to, the defaults. Wheel zoom is independent and still requires Ctrl.
 
@@ -260,7 +282,7 @@ Starting with v0.1.1 on main, focused input means a textarea, text input, or con
 
 ### Privacy and removal
 
-The plugin itself makes no network requests, uploads no chats, collects no telemetry, and writes no server settings. v0.1.0 stores only `dsh-plugin-chat-zoom:v1:percent`. Main v0.2.0 also stores `dsh-plugin-chat-zoom:v1:keyboard` (version and three binding strings) in origin-local localStorage. Missing/invalid keyboard records use defaults without migrating the old percentage or silently overwriting bad data. No key logs, cross-device/live-tab sync or per-chat settings.
+The plugin itself makes no network requests, uploads no chats, collects no telemetry, and writes no server settings. v0.1.0 stores only `dsh-plugin-chat-zoom:v1:percent`. Main v0.2.1 also stores `dsh-plugin-chat-zoom:v1:keyboard` (version and three binding strings) in origin-local localStorage. Missing/invalid keyboard records use defaults without migrating the old percentage or silently overwriting bad data. No key logs, cross-device/live-tab sync or per-chat settings.
 
 On main, first use **Settings → 缩放 → 恢复默认快捷键**, then **清除倍率记忆** and check for failure feedback before disabling or uninstalling. v0.1.0 only needs the latter. Normal cleanup removes the plugin's listeners, zoom markers, hints, and styles; a refresh or restart may be needed. Disabling keeps the preference by default. **Do not clear all localStorage just to remove the zoom preference.**
 

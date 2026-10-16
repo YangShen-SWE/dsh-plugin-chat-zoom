@@ -20,6 +20,8 @@
 
 2026-10-16：main 已完成自定义键盘组合并递增为 **v0.2.0（未发布）**，支持设置保存、恢复默认及独立本地键盘配置，默认和 Ctrl 滚轮保持兼容。市场 v0.1.0 tarball 未包含这些变化；在真实新包发布前，不修改其版本/描述以冒充已可安装，不新增重复 PR。验证范围和未验实机场景见 [更新说明](CHANGELOG.md)。
 
+2026-10-16 展示资料补充：main 仅因文档/图片递增为 **v0.2.1（未发布）**，运行时代码不变。原市场 YAML 已精简双语简介；插件根目录 [screenshots.json](screenshots.json) 声明两张 v0.1.0 隔离演示图，README 与原 PR 附图均明确标注“非 DSH 实机截图”。图片仅使用合成内容和原始发布客户端，不展示未发布设置。遵循市场指南，不给其旧 `data/screenshots.json` 添加键；合并及采集完成后才可能显示，不能保证立即展示。
+
 ### 仓库年龄门槛
 
 GitHub 仓库创建于 **2026-10-13 18:44:31 UTC**。满一天的最早时间为 **2026-10-14 18:44:31 UTC**（丹麦当地时间 20:44:31，UTC+02:00）。提交时尚未满一天，PR 不应勾选“已满一天”。
@@ -51,6 +53,8 @@ The tarball URL pins v0.1.0. A versioned filename must not be used under `latest
 2026-10-14: main is now development version v0.1.1 with a keyboard-focus fix; **no new package has been released**. Keep the valid v0.1.0 market tarball and matching feature description. Do not point to a nonexistent v0.1.1 asset, resubmit, or trigger a merge. See the [changelog](CHANGELOG.md) for the fix and simulated-test limitations.
 
 2026-10-16: main now completes custom keyboard chords as **v0.2.0 (unreleased)**, including settings save/default reset and separate local keyboard preferences. Default keyboard and Ctrl wheel remain compatible. The market's v0.1.0 archive does not contain these changes: do not advertise an installable upgrade or open a duplicate PR before a real new release. See the [changelog](CHANGELOG.md) for test scope and unverified real-host cases.
+
+2026-10-16 media follow-up: main increments only for documentation/media to **v0.2.1 (unreleased)**, with no runtime change. The existing market YAML has a shorter bilingual description. Root [screenshots.json](screenshots.json), the README and the original PR reference two released-v0.1.0 isolated demos, visibly labelled **not DSH-host screenshots**. They use synthetic content and the original release client, not unreleased settings. Do not add keys to the market's legacy screenshot file. Storefront display depends on merging and collection, not an immediate guarantee.
 
 **Age gate:** created 2026-10-13 18:44:31 UTC; eligible no earlier than 2026-10-14 18:44:31 UTC (20:44:31 in Denmark). Do not tick the one-day checkbox before that time. The current checker measures age when it runs; age-only failures can be rechecked upstream. No duplicate PR, close/reopen, empty push, fake date or gate bypass is needed. Scheduled rechecks have a queue and cooldown; eligibility does not guarantee an immediate green result.
 
