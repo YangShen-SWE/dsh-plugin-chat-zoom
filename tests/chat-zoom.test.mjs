@@ -314,10 +314,10 @@ test('settings show current percentage, local scope and only implemented native 
   assert.match(text(tree), /仅缩放聊天消息与输入区。侧栏、设置和全局弹窗不变。/);
   assert.match(text(tree), /范围 80%—200%，每档 10 个百分点。/);
   assert.equal(nodes(tree, node => node.props.role === 'group' && node.props['aria-label'] === '聊天倍率').length, 1);
-  assert.equal(byType(tree, 'select').length, 1);
+  assert.equal(byType(tree, 'select').length, 2);
   assert.equal(byType(tree, 'input').length, 3);
-  assert.deepEqual(byType(tree, 'button').map(text), ['缩小', '放大', '恢复 100%', '清除倍率记忆', '保存快捷键', '恢复默认快捷键']);
-  assert.equal(nodes(tree, node => node.props.role === 'status' && node.props['aria-live'] === 'polite').length, 2);
+  assert.deepEqual(byType(tree, 'button').map(text), ['缩小', '放大', '恢复 100%', '清除倍率记忆', '保存快捷键', '恢复默认快捷键', '恢复默认滚轮']);
+  assert.equal(nodes(tree, node => node.props.role === 'status' && node.props['aria-live'] === 'polite').length, 3);
 });
 
 test('settings selection, zoom buttons, reset and clear stay wired to the real controller', t => {
@@ -339,7 +339,7 @@ test('settings selection, zoom buttons, reset and clear stay wired to the real c
 
 test('settings preserve all options and disable only the relevant boundary button', t => {
   const f = settingsFixture(t);
-  assert.deepEqual(byType(f.render(), 'option').map(node => node.props.value), Array.from({ length: 13 }, (_, i) => 80 + i * 10));
+  assert.deepEqual(byType(byType(f.render(), 'select')[0], 'option').map(node => node.props.value), Array.from({ length: 13 }, (_, i) => 80 + i * 10));
   for (const value of [80, 200]) {
     byType(f.render(), 'select')[0].props.onChange({ target: { value: String(value) } });
     const tree = f.render();
@@ -622,6 +622,203 @@ test('symbol aliases preserve Ctrl plus/equal/shift and numpad defaults', t => {
     assert.equal(f.dispatch('keydown', options).defaultPrevented, true);
     assert.equal(f.controller.percent, 110);
   }
+});
+
+const wheelConfig = modifier => ({ version:1, modifier });
+const wheelGesture = modifier => ({ ctrlKey:modifier === 'Ctrl', altKey:modifier === 'Alt', shiftKey:modifier === 'Shift', metaKey:modifier === 'Meta' });
+const wheelSelect = f => byType(f.render(), 'select').find(node => node.props['aria-label'] === '滚轮修饰键');
+const wheelStatus = f => text(nodes(f.render(), node => node.props.role === 'status' && node.props.id?.endsWith('-wheel'))[0]);
+
+for (const modifier of ['Ctrl', 'Alt', 'Shift', 'Meta']) {
+  test(`wheel ${modifier} selection claims only that modifier and preserves throttle, direction and limits`, t => {
+    const f = fixture(t);
+    assert.equal(f.controller.setWheelConfig(wheelConfig(modifier)).ok, true);
+    const gesture = { target:f.flow, deltaY:-1, ...wheelGesture(modifier) };
+    assert.equal(f.dispatch('wheel', gesture).defaultPrevented, true);
+    assert.equal(f.controller.percent, 110);
+    assert.equal(f.dispatch('wheel', gesture).defaultPrevented, true);
+    assert.equal(f.controller.percent, 110);
+    f.tick(89);
+    f.dispatch('wheel', gesture);
+    assert.equal(f.controller.percent, 110);
+    f.tick(1);
+    f.dispatch('wheel', gesture);
+    assert.equal(f.controller.percent, 120);
+    f.dispatch('wheel', { ...gesture, deltaY:1 });
+    assert.equal(f.controller.percent, 110, 'direction reversal is immediate');
+    for (const [value, deltaY] of [[200, -1], [80, 1]]) {
+      f.controller.setPercent(value);
+      f.tick(90);
+      assert.equal(f.dispatch('wheel', { ...gesture, deltaY }).defaultPrevented, true);
+      assert.equal(f.controller.percent, value);
+    }
+    f.controller.setPercent(130);
+    for (const other of ['Ctrl', 'Alt', 'Shift', 'Meta'].filter(value => value !== modifier)) {
+      assert.equal(f.dispatch('wheel', { ...gesture, ...wheelGesture(other) }).defaultPrevented, false);
+      assert.equal(f.dispatch('wheel', { ...gesture, [`${other.toLowerCase()}Key`]:true }).defaultPrevented, false);
+    }
+    assert.equal(f.dispatch('wheel', { ...gesture, ...wheelGesture(null) }).defaultPrevented, false);
+    assert.equal(f.controller.percent, 130);
+  });
+}
+
+test('wheel ignores malformed configs and does not overwrite saved preferences', t => {
+  const f = fixture(t);
+  f.controller.setWheelConfig(wheelConfig('Alt'));
+  const stored = f.storage.get('dsh-plugin-chat-zoom:v1:wheel');
+  for (const config of [null, {}, wheelConfig('None'), wheelConfig('Ctrl+Alt'), wheelConfig('alt'), { version:2, modifier:'Alt' }, { ...wheelConfig('Shift'), extra:true }, ['Alt']]) {
+    assert.equal(f.controller.setWheelConfig(config).ok, false);
+    assert.equal(f.controller.getSnapshot().wheelConfig.modifier, 'Alt');
+    assert.equal(f.storage.get('dsh-plugin-chat-zoom:v1:wheel'), stored);
+  }
+});
+
+test('wheel preference restores independently of old percentage and keyboard on remount', t => {
+  const f = fixture(t);
+  f.controller.setPercent(150);
+  f.controller.setKeyboardConfig(keyboardConfig());
+  f.controller.setWheelConfig(wheelConfig('Meta'));
+  f.storage.set('unrelated', 'keep');
+  const active = api.mountChatZoom(f.win);
+  t.after(() => active.dispose());
+  assert.equal(active.percent, 150);
+  assert.equal(active.getSnapshot().keyboardConfig.bindings.zoomIn, 'Alt+J');
+  assert.equal(active.getSnapshot().wheelConfig.modifier, 'Meta');
+  assert.deepEqual(JSON.parse(f.storage.get('dsh-plugin-chat-zoom:v1:wheel')), wheelConfig('Meta'));
+  assert.equal(f.dispatch('wheel', { target:f.flow, deltaY:-1, ...wheelGesture('Meta') }).defaultPrevented, true);
+  assert.equal(active.percent, 160);
+  assert.equal(f.storage.get('unrelated'), 'keep');
+});
+
+test('missing, invalid and future wheel records default without writes or percent migration', t => {
+  const f = fixture(t);
+  f.storage.set('dsh-plugin-chat-zoom:v1:percent', '140');
+  for (const raw of [null, '{', 'null', '[]', JSON.stringify({ version:2, modifier:'Alt' }), JSON.stringify(wheelConfig('None'))]) {
+    if (raw === null) f.storage.delete('dsh-plugin-chat-zoom:v1:wheel');
+    else f.storage.set('dsh-plugin-chat-zoom:v1:wheel', raw);
+    const active = api.mountChatZoom(f.win);
+    assert.equal(active.percent, 140);
+    assert.equal(active.getSnapshot().wheelConfig.modifier, 'Ctrl');
+    assert.equal(f.storage.get('dsh-plugin-chat-zoom:v1:wheel') ?? null, raw);
+    active.dispose();
+  }
+});
+
+test('wheel reset clears only its own key, preserves keyboard drafts and starts a fresh throttle gate', t => {
+  const f = settingsFixture(t);
+  f.controller.setPercent(130);
+  f.controller.setKeyboardConfig(keyboardConfig());
+  fillBindings(f, keyboardConfig('F8', 'F9', 'F2').bindings);
+  const keyboardSaved = f.storage.get(api.KEYBOARD_STORAGE_KEY);
+  f.controller.setWheelConfig(wheelConfig('Alt'));
+  f.dispatch('wheel', { target:f.flow, deltaY:-1, ...wheelGesture('Alt') });
+  const level = f.controller.percent;
+  button(f.render(), '恢复默认滚轮').props.onClick();
+  assert.equal(f.controller.percent, level);
+  assert.equal(f.storage.has('dsh-plugin-chat-zoom:v1:wheel'), false);
+  assert.equal(f.storage.get(api.KEYBOARD_STORAGE_KEY), keyboardSaved);
+  assert.equal(byType(f.render(), 'input')[0].props.value, 'F8');
+  assert.match(wheelStatus(f), /恢复默认.*倍率和键盘不变/);
+  assert.equal(f.dispatch('wheel', { target:f.flow, deltaY:-1 }).defaultPrevented, true);
+  assert.equal(f.controller.percent, level + 10, 'reset does not inherit a recent old-modifier gate');
+  f.controller.setWheelConfig(wheelConfig('Shift'));
+  assert.equal(f.dispatch('wheel', { target:f.flow, deltaY:-1, ...wheelGesture('Shift') }).defaultPrevented, true);
+  assert.equal(f.controller.percent, level + 20, 'modifier changes apply without waiting for previous gate');
+});
+
+test('custom wheel preserves keyboard and all independent clear/reset actions', t => {
+  const f = fixture(t);
+  f.controller.setKeyboardConfig(keyboardConfig());
+  f.controller.setWheelConfig(wheelConfig('Shift'));
+  f.doc.activeElement = f.textarea;
+  assert.equal(f.dispatch('keydown', { key:'j', ctrlKey:false, altKey:true }).defaultPrevented, true);
+  f.controller.clearMemory();
+  assert.equal(f.controller.getSnapshot().wheelConfig.modifier, 'Shift');
+  assert.equal(f.storage.has('dsh-plugin-chat-zoom:v1:wheel'), true);
+  f.controller.resetKeyboardConfig();
+  assert.equal(f.controller.getSnapshot().wheelConfig.modifier, 'Shift');
+  assert.equal(f.dispatch('keydown').defaultPrevented, true);
+});
+
+test('custom wheel avoids scope, IME, AltGraph, dialog and noncancelable/default-prevented gestures', t => {
+  const f = fixture(t);
+  f.controller.setWheelConfig(wheelConfig('Alt'));
+  const gesture = { target:f.flow, deltaY:-1, ...wheelGesture('Alt') };
+  for (const extra of [{ target:f.sidebar }, { target:f.settings }, { target:f.embedded }, { target:f.terminal }, { target:f.ignoredInput }, { deltaY:0 }, { deltaY:NaN }, { deltaY:Infinity }, { isComposing:true }, { keyCode:229 }, { getModifierState:() => true }, { cancelable:false }, { defaultPrevented:true }]) {
+    assert.equal(f.dispatch('wheel', { ...gesture, ...extra }).stopped, undefined);
+    assert.equal(f.controller.percent, 100);
+  }
+  f.dispatch('compositionstart');
+  assert.equal(f.dispatch('wheel', gesture).defaultPrevented, false);
+  f.dispatch('compositionend');
+  const modal = f.body.appendChild(new Element('dialog', { open:'' }));
+  assert.equal(f.dispatch('wheel', gesture).defaultPrevented, false);
+  modal.hidden = true;
+  assert.equal(f.dispatch('wheel', { ...gesture, target:f.textarea }).defaultPrevented, true);
+  assert.equal(f.controller.percent, 110);
+});
+
+test('wheel native selector exposes four choices, applies immediately and links feedback', t => {
+  const f = settingsFixture(t);
+  const select = wheelSelect(f);
+  assert.ok(select);
+  assert.equal(select.props.value, 'Ctrl');
+  assert.deepEqual(byType(select, 'option').map(node => node.props.value), ['Ctrl', 'Alt', 'Shift', 'Meta']);
+  assert.match(wheelStatus(f), /当前滚轮：Ctrl/);
+  assert.doesNotMatch(wheelStatus(f), /已保存/);
+  for (const id of select.props['aria-describedby'].split(' ')) assert.equal(nodes(f.render(), node => node.props.id === id).length, 1);
+  select.props.onChange({ target:{ value:'Shift' } });
+  assert.equal(wheelSelect(f).props.value, 'Shift');
+  assert.match(wheelStatus(f), /已生效并保存/);
+  assert.match(text(f.render()), /只按所选一个修饰键/);
+  assert.match(text(f.render()), /普通滚轮不接管/);
+  assert.equal(select.props.onKeyDown, undefined);
+  assert.equal(select.props.autoFocus, undefined);
+});
+
+test('blocked wheel writes/removals apply only to the page and report accurate feedback', t => {
+  const f = settingsFixture(t);
+  wheelSelect(f).props.onChange({ target:{ value:'Alt' } });
+  const stored = f.storage.get('dsh-plugin-chat-zoom:v1:wheel');
+  f.win.localStorage.setItem = () => { throw new Error('blocked'); };
+  f.win.localStorage.removeItem = () => { throw new Error('blocked'); };
+  wheelSelect(f).props.onChange({ target:{ value:'Meta' } });
+  assert.equal(f.controller.getSnapshot().wheelConfig.modifier, 'Meta');
+  assert.match(wheelStatus(f), /本页已生效.*无法保存/);
+  assert.equal(f.storage.get('dsh-plugin-chat-zoom:v1:wheel'), stored);
+  button(f.render(), '恢复默认滚轮').props.onClick();
+  assert.equal(f.controller.getSnapshot().wheelConfig.modifier, 'Ctrl');
+  assert.match(wheelStatus(f), /本页已生效.*无法删除/);
+  assert.equal(f.storage.get('dsh-plugin-chat-zoom:v1:wheel'), stored);
+});
+
+test('absent storage still permits session wheel choice without throwing', t => {
+  const f = fixture(t);
+  Object.defineProperty(f.win, 'localStorage', { get() { throw new Error('blocked'); } });
+  const active = api.mountChatZoom(f.win);
+  t.after(() => active.dispose());
+  assert.equal(active.getSnapshot().wheelConfig.modifier, 'Ctrl');
+  assert.equal(active.setWheelConfig(wheelConfig('Alt')).ok, true);
+  assert.match(active.getSnapshot().wheelMessage, /本页已生效.*无法保存/);
+  active.resetWheelConfig();
+  assert.match(active.getSnapshot().wheelMessage, /无法删除/);
+});
+
+test('wheel controls remain inert when unsupported or disposed and listeners clean up', t => {
+  const f = settingsFixture(t, false);
+  assert.equal(wheelSelect(f).props.disabled, true);
+  assert.equal(button(f.render(), '恢复默认滚轮').props.disabled, true);
+  assert.equal(f.controller.setWheelConfig(wheelConfig('Alt')).ok, false);
+  assert.equal(f.controller.getSnapshot().wheelConfig.modifier, 'Ctrl');
+  const activeFixture = fixture(t);
+  const active = activeFixture.controller;
+  active.setWheelConfig(wheelConfig('Meta'));
+  active.dispose();
+  assert.equal(active.setWheelConfig(wheelConfig('Alt')).ok, false);
+  active.resetWheelConfig();
+  assert.equal(active.getSnapshot().wheelConfig.modifier, 'Meta');
+  assert.equal(activeFixture.listeners.size, 0);
+  assert.equal(activeFixture.flow.getAttribute('data-dsh-chat-zoom-owner'), null);
 });
 
 const statusText = f => text(nodes(f.render(), node => node.props.role === 'status' && !node.props.id)[0]);

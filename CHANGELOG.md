@@ -1,5 +1,21 @@
 # Changelog · 更新说明
 
+## v0.3.0 — Unreleased / 未发布（2026-10-17，D4 提前执行）
+
+### 中文
+
+- **需求与实现**：原生“滚轮缩放”设置可选 Ctrl/Alt/Shift/Meta 中一个修饰键，默认 Ctrl，选择立即生效；恢复默认只删除滚轮配置，不改倍率或键盘绑定。完整新增能力按当前 0.2.1 递增 MINOR 为 0.3.0；不新增依赖、权限、工具栏或宿主配置变更。
+- **隔离与冲突**：仅在聊天消息/输入区且只按所选一个修饰键时处理，普通滚动不接管；本版也不再接受默认 Ctrl 叠加 Shift 的滚轮。IME、AltGraph、弹窗、内嵌工具和不可取消/已处理事件保持避让。90ms 同向节流、即时反向和 80%–200% 边界不变；更换修饰键/恢复默认重置节流门。Shift 可能占用横向滚动，Alt/Meta 可能被系统或宿主先处理，不保证能覆盖；改选其他键或使用倍率控件。
+- **存储与文档**：独立键 `dsh-plugin-chat-zoom:v1:wheel` 保存版本号与单个修饰键，不迁移原倍率/键盘记录。缺失、无效或未来格式用 Ctrl，不自动覆盖异常记录；写入/删除失败如实提示本页有效、刷新可能回退。中英文 README、隐私、贡献和市场状态同步。PR #7323 已于 2026-10-17 正常合并，两项检查通过；不重复投稿，市场仍安装已发布 v0.1.0。
+- **验证**：先在未实现时验证新增 14 项均失败（旧 52 项通过），接线后全部 66/66 模拟 DOM/虚拟 React/配置测试通过；覆盖四修饰键准确匹配、普通滚动、边界/节流、独立恢复/重挂载、异常存储和清理。入口/客户端/测试语法、共享模块、文档链接及 13 文件 dry-run 包清单通过。未安装/重启真实 DSH，未实测物理滚轮/触控板、系统冲突、真实 IME、视觉/读屏；没有 Release、部署、自动合并或旧 tag/包改写。
+
+### English
+
+- Added a native wheel section with one Ctrl/Alt/Shift/Meta choice, default Ctrl, immediate application and an independent restore-default action. The complete user capability increments current 0.2.1 to minor 0.3.0. No new dependencies, permissions, toolbar or host configuration changes.
+- Only the selected single modifier over chat/composer is claimed. Ordinary scrolling and extra modifiers are excluded; Ctrl+Shift wheel, previously tolerated by the Ctrl gate, is no longer claimed. IME/AltGraph, dialogs, embedded tools and handled/noncancelable events remain excluded. Keep 90ms same-direction throttling, immediate reversal and 80%–200% limits. Modifier changes/default reset start a fresh gate. Shift may replace horizontal scroll; Alt/Meta may be handled first by the OS/host. Choose another modifier or use level controls if needed.
+- Store only schema version and modifier in independent `dsh-plugin-chat-zoom:v1:wheel`. Keep old percentage/keyboard records. Missing, invalid or future records default to Ctrl without silent writes; failed writes/removals report page-only changes that may revert on refresh. Bilingual usage/privacy/contribution and market notes are updated. PR #7323 merged normally on 2026-10-17 with both checks passing; no duplicate submission, and the market still installs released v0.1.0.
+- Before implementation all 14 new checks failed while the original 52 passed; after wiring all 66 simulated DOM/virtual-React/config tests pass. Coverage includes exact modifier matching, ordinary wheels, limits/throttle, independent reset/remount, blocked storage and cleanup. Syntax, shared-module/docs links and the 13-file dry-run package check pass. No real DSH install/restart, physical wheel/trackpad, OS conflict, actual IME, visual or screen-reader acceptance. No Release, deployment, automatic merge or old tag/asset change.
+
 ## v0.2.1 — Unreleased / 未发布（2026-10-16，市场展示资料）
 
 ### 中文

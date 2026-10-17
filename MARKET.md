@@ -4,7 +4,7 @@
 
 目标市场：[awesome-dsh-plugin/awesome-dsh-plugin](https://github.com/awesome-dsh-plugin/awesome-dsh-plugin)。本账号 Simple Desktop Pet 的 [PR #6267](https://github.com/awesome-dsh-plugin/awesome-dsh-plugin/pull/6267) 已于 2026-10-13 合并。缩放插件需要独立投稿；桌宠已收录不表示本插件也已收录。
 
-本次投稿：[Chat Zoom PR #7323](https://github.com/awesome-dsh-plugin/awesome-dsh-plugin/pull/7323)。投稿只表示已提交；请在原 PR 页面查看实际检查、评审和合并状态。
+本次投稿：[Chat Zoom PR #7323](https://github.com/awesome-dsh-plugin/awesome-dsh-plugin/pull/7323) 已于 **2026-10-17 08:32:23 UTC（丹麦 10:32:23）合并**，最新 head 的 `check` 与 `Submission gate` 均通过。市场仍固定已发布 v0.1.0 包；实际界面展示取决于采集，不代表 main 开发功能已发布。不重复投稿或修改已合并 PR。
 
 规则来源：[贡献指南](https://github.com/awesome-dsh-plugin/awesome-dsh-plugin/blob/main/contributing.md)、[PR 模板](https://github.com/awesome-dsh-plugin/awesome-dsh-plugin/blob/main/.github/pull_request_template.md)及 [Submission gate 实现](https://github.com/awesome-dsh-plugin/awesome-dsh-plugin/blob/main/scripts/check-submission.mjs)。规则可能更新，维护时重新核对。
 
@@ -21,6 +21,8 @@
 2026-10-16：main 已完成自定义键盘组合并递增为 **v0.2.0（未发布）**，支持设置保存、恢复默认及独立本地键盘配置，默认和 Ctrl 滚轮保持兼容。市场 v0.1.0 tarball 未包含这些变化；在真实新包发布前，不修改其版本/描述以冒充已可安装，不新增重复 PR。验证范围和未验实机场景见 [更新说明](CHANGELOG.md)。
 
 2026-10-16 展示资料补充：main 仅因文档/图片递增为 **v0.2.1（未发布）**，运行时代码不变。原市场 YAML 已精简双语简介；插件根目录 [screenshots.json](screenshots.json) 声明两张 v0.1.0 隔离演示图，README 与原 PR 附图均明确标注“非 DSH 实机截图”。图片仅使用合成内容和原始发布客户端，不展示未发布设置。遵循市场指南，不给其旧 `data/screenshots.json` 添加键；合并及采集完成后才可能显示，不能保证立即展示。
+
+2026-10-17 D4：main 新增独立滚轮修饰键（Ctrl/Alt/Shift/Meta），开发版本为 **v0.3.0（未发布）**。市场 PR 已合并，此次不修改已合并分支、不重复投稿；双语简介与图片仍对应已发布 v0.1.0，原 tarball 保持有效。未来市场升级须先获得发布授权并产出真实新包，再按当时规则维护版本链接。
 
 ### 仓库年龄门槛
 
@@ -44,7 +46,7 @@ GitHub 仓库创建于 **2026-10-13 18:44:31 UTC**。满一天的最早时间为
 
 Target: [awesome-dsh-plugin/awesome-dsh-plugin](https://github.com/awesome-dsh-plugin/awesome-dsh-plugin). Simple Desktop Pet [PR #6267](https://github.com/awesome-dsh-plugin/awesome-dsh-plugin/pull/6267) was merged on 2026-10-13. That does not list Chat Zoom automatically.
 
-Submission: [Chat Zoom PR #7323](https://github.com/awesome-dsh-plugin/awesome-dsh-plugin/pull/7323). Check that PR for the actual CI, review and merge state; submission alone does not mean admission.
+[Chat Zoom PR #7323](https://github.com/awesome-dsh-plugin/awesome-dsh-plugin/pull/7323) **merged on 2026-10-17 at 08:32:23 UTC (10:32:23 in Denmark)**. Both latest-head checks (`check` and `Submission gate`) passed. The market still pins released v0.1.0; actual UI display depends on collection, not publication of main's development features. Do not resubmit or edit the merged PR.
 
 Follow the upstream [contribution guide](https://github.com/awesome-dsh-plugin/awesome-dsh-plugin/blob/main/contributing.md) and [PR template](https://github.com/awesome-dsh-plugin/awesome-dsh-plugin/blob/main/.github/pull_request_template.md). Add only `data/plugins/YangShen-SWE__dsh-plugin-chat-zoom.yml` under `ui`; do not change generated market READMEs, CI or unrelated entries. Keep supplemental documents in this repository. The package declares `dsh.bundle`, includes its patch, and the repository needs the `dsh-plugin` topic.
 
@@ -55,6 +57,8 @@ The tarball URL pins v0.1.0. A versioned filename must not be used under `latest
 2026-10-16: main now completes custom keyboard chords as **v0.2.0 (unreleased)**, including settings save/default reset and separate local keyboard preferences. Default keyboard and Ctrl wheel remain compatible. The market's v0.1.0 archive does not contain these changes: do not advertise an installable upgrade or open a duplicate PR before a real new release. See the [changelog](CHANGELOG.md) for test scope and unverified real-host cases.
 
 2026-10-16 media follow-up: main increments only for documentation/media to **v0.2.1 (unreleased)**, with no runtime change. The existing market YAML has a shorter bilingual description. Root [screenshots.json](screenshots.json), the README and the original PR reference two released-v0.1.0 isolated demos, visibly labelled **not DSH-host screenshots**. They use synthetic content and the original release client, not unreleased settings. Do not add keys to the market's legacy screenshot file. Storefront display depends on merging and collection, not an immediate guarantee.
+
+2026-10-17 D4: main adds an independent Ctrl/Alt/Shift/Meta wheel modifier as **v0.3.0 (unreleased)**. The market PR has merged; do not edit its merged branch or resubmit. Market descriptions and demo images still describe released v0.1.0, with the valid original tarball retained. Any future market upgrade needs explicit release authorization and a real new package first, followed by the then-current market policy.
 
 **Age gate:** created 2026-10-13 18:44:31 UTC; eligible no earlier than 2026-10-14 18:44:31 UTC (20:44:31 in Denmark). Do not tick the one-day checkbox before that time. The current checker measures age when it runs; age-only failures can be rechecked upstream. No duplicate PR, close/reopen, empty push, fake date or gate bypass is needed. Scheduled rechecks have a queue and cooldown; eligibility does not guarantee an immediate green result.
 
