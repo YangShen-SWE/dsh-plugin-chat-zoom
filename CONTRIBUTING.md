@@ -6,6 +6,8 @@
 
 本仓库分发完整、可读的预构建 `lib/client.js`，没有原始拆分源码或构建工具。修改此文件需保持 DSH 共享 React 模块加载方式，不引入独立 React 副本或安装脚本。不修改用户的宿主配置，不自动重启 DSH。
 
+D5 的逻辑证据、模拟器限制与实机未测项已记录在[脱敏验收记录](VALIDATION.md)。后续补验只能添加实际执行结果，不把模拟通过改称实机通过。
+
 提交前检查：
 
 1. 运行 `node --check index.js`、`node --check lib/client.js`，以及 `node --test tests/chat-zoom.test.mjs`（Node.js 24，无额外依赖）。测试挂载模拟 DOM 中的真实控制器，不等于宿主实机验收。
@@ -21,6 +23,8 @@
 Use [Issues](https://github.com/YangShen-SWE/dsh-plugin-chat-zoom/issues) or a PR to report problems or changes. Include host/browser versions, affected area, reproduction steps and whether settings controls work. Do not share private chats or account data.
 
 The readable prebuilt client is the maintained runtime in this repository; split sources and build tools are not shipped. Keep DSH's shared React loading. Do not add a separate React copy, install scripts, automatic host restarts or user configuration edits.
+
+The [redacted validation record](VALIDATION.md) records D5 logic evidence, model limitations and untested real-host cases. Add only checks actually performed; never relabel simulated passes as host acceptance.
 
 Before submitting:
 

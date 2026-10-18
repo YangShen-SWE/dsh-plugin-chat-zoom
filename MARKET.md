@@ -24,6 +24,8 @@
 
 2026-10-17 D4：main 新增独立滚轮修饰键（Ctrl/Alt/Shift/Meta），开发版本为 **v0.3.0（未发布）**。市场 PR 已合并，此次不修改已合并分支、不重复投稿；双语简介与图片仍对应已发布 v0.1.0，原 tarball 保持有效。未来市场升级须先获得发布授权并产出真实新包，再按当时规则维护版本链接。
 
+2026-10-18 D5：main 回归修复开发版本为 **v0.3.1（未发布）**；验收证据和实机未测项见 [验收记录](VALIDATION.md)。已合并市场 PR 与原 v0.1.0 下载链接保持不变，不为源码修复重复投稿。
+
 ### 仓库年龄门槛
 
 GitHub 仓库创建于 **2026-10-13 18:44:31 UTC**。满一天的最早时间为 **2026-10-14 18:44:31 UTC**（丹麦当地时间 20:44:31，UTC+02:00）。提交时尚未满一天，PR 不应勾选“已满一天”。
@@ -59,6 +61,8 @@ The tarball URL pins v0.1.0. A versioned filename must not be used under `latest
 2026-10-16 media follow-up: main increments only for documentation/media to **v0.2.1 (unreleased)**, with no runtime change. The existing market YAML has a shorter bilingual description. Root [screenshots.json](screenshots.json), the README and the original PR reference two released-v0.1.0 isolated demos, visibly labelled **not DSH-host screenshots**. They use synthetic content and the original release client, not unreleased settings. Do not add keys to the market's legacy screenshot file. Storefront display depends on merging and collection, not an immediate guarantee.
 
 2026-10-17 D4: main adds an independent Ctrl/Alt/Shift/Meta wheel modifier as **v0.3.0 (unreleased)**. The market PR has merged; do not edit its merged branch or resubmit. Market descriptions and demo images still describe released v0.1.0, with the valid original tarball retained. Any future market upgrade needs explicit release authorization and a real new package first, followed by the then-current market policy.
+
+2026-10-18 D5: regression fix on main is **v0.3.1 (unreleased)**. See the [validation record](VALIDATION.md) for evidence and real-host gaps. Leave the merged PR and original v0.1.0 link unchanged; do not resubmit a source-only fix.
 
 **Age gate:** created 2026-10-13 18:44:31 UTC; eligible no earlier than 2026-10-14 18:44:31 UTC (20:44:31 in Denmark). Do not tick the one-day checkbox before that time. The current checker measures age when it runs; age-only failures can be rechecked upstream. No duplicate PR, close/reopen, empty push, fake date or gate bypass is needed. Scheduled rechecks have a queue and cooldown; eligibility does not guarantee an immediate green result.
 

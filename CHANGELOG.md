@@ -1,5 +1,21 @@
 # Changelog · 更新说明
 
+## v0.3.1 — Unreleased / 未发布（2026-10-18，D5 回归）
+
+### 中文
+
+- **需求与最小修复**：复核本周的局部缩放、键盘/滚轮配置、边界、旧存储、清除、焦点/IME/弹窗及停用。模拟事件复现了一个符号别名遗漏：配置将 `Shift+Minus` 归一化为 `Minus`，但物理 Minus 键带 Shift 时产生的 `_` 未命中。仅对 `shiftKey=true`、`code=Minus`、`key=_` 的事件映射到 Minus；不接管其他键位的下划线，也不放宽修饰键或焦点范围。修复按当前 0.3.0 递增 PATCH 为 0.3.1。
+- **轻量回归**：增加 9 项检查与可推进的模拟计时器/动画帧/观察器，全部 75/75 通过。新增覆盖五秒提示续期、多面板与单一播报、hero/隐藏/返回聊天、停用取消延迟任务与自有标记恢复、旧倍率无迁移、合成锚点/底部滚动计算。初次出现的另一处锚点失败来自模拟器没有随 scrollTop 更新视口坐标；修正模拟后通过，未据此改动运行时滚动逻辑。
+- **验收与文档**：新增脱敏 [验收记录](VALIDATION.md)，区分已验证的逻辑与未验证的真实宿主；同步中英文说明。旧三种本地存储键/格式、默认设置及隐私行为不变。入口/客户端/测试语法、共享 React 注册、文档链接及 14 文件 dry-run 包清单检查通过，测试不打入包。
+- **限制与发布边界**：没有可访问的真实 DSH 浏览器自动化/物理输入工具；长聊天布局、图片/代码、高倍率草稿编辑与发送、真实 IME、侧栏/设置视觉隔离、真实禁用/重启及读屏未测。未启动替代服务器或修改宿主。市场 PR #7323 已合并且规则未变，不重复投稿；只有 v0.1.0 已发布，原 tag/包不变，无 Release、部署或合并操作。
+
+### English
+
+- Regressed scoped zoom, keyboard/wheel settings, limits, legacy storage, independent clearing, focus/IME/dialog exclusion and cleanup. Reproduced a symbol-alias gap using simulated events: configured Shift+Minus normalizes to Minus, but a shifted physical Minus producing `_` did not match. Map only `shiftKey=true`, `code=Minus`, `key=_` to Minus; do not capture underscores from other keys or widen modifier/focus rules. This fix increments current 0.3.0 to patch 0.3.1.
+- Added 9 checks and controllable simulated timers/animation frames/observers; all 75 tests pass. New coverage includes hint renewal/expiry, multiple panels/one live hint, hero/hidden/return discovery, delayed-task disposal/owned-marker restoration, unmigrated legacy levels and synthetic anchor/tail arithmetic. A second initial anchor failure was a test-model error: viewport coordinates did not follow scrollTop. Correcting the model passed without changing runtime scroll logic.
+- Added a redacted [validation record](VALIDATION.md), separating logic evidence from unverified real-host behavior, and updated bilingual instructions. Existing storage keys/schemas, defaults and privacy behavior are unchanged. Syntax, shared React registration, relative links and the 14-file dry-run manifest pass; tests are excluded from installation packages.
+- No accessible real DSH browser automation/physical-input tool was available. Real long-chat layout, images/code, high-zoom draft editing/sending, IME, sidebar/settings visual isolation, actual host disable/restart and screen readers remain untested. No replacement server or host edits. Market PR #7323 is merged and its rules are unchanged: no duplicate PR. Only v0.1.0 is released; no old tag/archive changes, Release, deployment or merge action.
+
 ## v0.3.0 — Unreleased / 未发布（2026-10-17，D4 提前执行）
 
 ### 中文

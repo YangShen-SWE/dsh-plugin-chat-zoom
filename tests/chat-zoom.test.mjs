@@ -108,6 +108,9 @@ function fixture(t) {
   };
   const listeners = new Map();
   const storage = new Map();
+  const timers = new Map();
+  const frames = new Map();
+  const observers = new Set();
   let clock = 100;
   let sequence = 0;
   const win = {
@@ -118,9 +121,15 @@ function fixture(t) {
       setItem: (key, value) => storage.set(key, value),
       removeItem: key => storage.delete(key)
     },
-    MutationObserver: class { observe() {} disconnect() {} },
-    requestAnimationFrame: () => ++sequence, cancelAnimationFrame() {},
-    setTimeout: () => ++sequence, clearTimeout() {},
+    MutationObserver: class {
+      constructor(callback) { observers.add(this); this.callback = callback; this.active = false; }
+      observe() { this.active = true; }
+      disconnect() { this.active = false; }
+    },
+    requestAnimationFrame(callback) { const id = ++sequence; frames.set(id, callback); return id; },
+    cancelAnimationFrame(id) { frames.delete(id); },
+    setTimeout(callback, delay) { const id = ++sequence; timers.set(id, { callback, due:clock + delay }); return id; },
+    clearTimeout(id) { timers.delete(id); },
     addEventListener: (name, listener) => listeners.set(name, listener),
     removeEventListener: (name, listener) => {
       if (listeners.get(name) === listener) listeners.delete(name);
@@ -142,8 +151,17 @@ function fixture(t) {
   return {
     controller, dispatch, win, doc, body, html, root, flow, composer, textarea, editable,
     plainInput, textInput, button, link, send, file, checkbox, select, embedded,
-    terminal, ignoredInput, sidebar, settings, storage, listeners,
-    tick: amount => { clock += amount; }
+    terminal, ignoredInput, sidebar, settings, storage, listeners, scroller, head,
+    timers, frames, observers,
+    flushFrames() {
+      const pending = [...frames]; frames.clear();
+      for (const [, callback] of pending) callback(clock);
+    },
+    mutate(records) { for (const observer of observers) if (observer.active) observer.callback(records); },
+    tick(amount) {
+      clock += amount;
+      for (const [id, timer] of [...timers]) if (timer.due <= clock && timers.delete(id)) timer.callback();
+    }
   };
 }
 
@@ -896,5 +914,168 @@ test('reset and clear have linked descriptions and no custom keyboard intercepti
   f.doc.activeElement = f.settings;
   for (const key of ['Tab', 'ArrowDown', 'Enter', ' ']) {
     assert.equal(f.dispatch('keydown', { key, ctrlKey: false }).defaultPrevented, false);
+  }
+});
+
+// D5: deterministic scheduling/layout arithmetic, never real browser geometry.
+test('shifted physical Minus matches the normalized Minus binding, not arbitrary underscore keys', t => {
+  const f = fixture(t);
+  f.doc.activeElement = f.textarea;
+  f.controller.setPercent(140);
+  const event = f.dispatch('keydown', { key:'_', code:'Minus', shiftKey:true });
+  assert.equal(event.defaultPrevented, true);
+  assert.equal(f.controller.percent, 130);
+  assert.equal(f.dispatch('keydown', { key:'_', code:'KeyQ', shiftKey:true }).defaultPrevented, false);
+  assert.equal(f.dispatch('keydown', { key:'_', code:'Minus', shiftKey:true, ctrlKey:false }).defaultPrevented, false);
+  for (const extra of [{ isComposing:true }, { keyCode:229 }, { getModifierState:() => true }, { altKey:true }, { defaultPrevented:true }, { cancelable:false }]) {
+    const blocked = f.dispatch('keydown', { key:'_', code:'Minus', shiftKey:true, ...extra });
+    assert.equal(blocked.stopped, undefined);
+    assert.equal(f.controller.percent, 130);
+  }
+  f.controller.setKeyboardConfig(keyboardConfig('Alt+J', 'Alt+Minus', 'F9'));
+  assert.equal(f.dispatch('keydown', { key:'_', code:'Minus', shiftKey:true }).defaultPrevented, false);
+  assert.equal(f.dispatch('keydown', { key:'_', code:'Minus', shiftKey:true, ctrlKey:false, altKey:true }).defaultPrevented, true);
+  assert.equal(f.controller.percent, 120);
+  f.doc.activeElement = f.button;
+  assert.equal(f.dispatch('keydown', { key:'_', code:'Minus', shiftKey:true, ctrlKey:false, altKey:true }).defaultPrevented, false);
+});
+
+test('hint expires five seconds after the most recent adjustment without claiming focus', t => {
+  const f = fixture(t);
+  const hint = f.root.querySelector('[data-dsh-chat-zoom-hint]');
+  assert.equal(hint.hidden, true);
+  f.controller.change(1);
+  assert.equal(hint.hidden, false);
+  f.tick(4999);
+  assert.equal(hint.hidden, false);
+  f.controller.change(1);
+  f.tick(1);
+  assert.equal(hint.hidden, false, 'old deadline must not hide a renewed hint');
+  f.tick(4999);
+  assert.equal(hint.hidden, true);
+  assert.equal(f.doc.activeElement, f.body);
+  assert.equal(hint.style.pointerEvents, undefined); // noninteractive behavior is in owned CSS
+  assert.match(f.head.children[0].textContent, /pointer-events:none/);
+});
+
+test('dispose cancels pending timers, frames, observers, owned UI and later mutations', t => {
+  const f = fixture(t);
+  f.controller.change(1);
+  f.mutate([{ type:'attributes', target:f.root }]);
+  assert.ok(f.timers.size > 0 && f.frames.size > 0);
+  f.controller.dispose();
+  f.controller.dispose();
+  assert.equal(f.timers.size, 0);
+  assert.equal(f.frames.size, 0);
+  assert.equal([...f.observers].some(observer => observer.active), false);
+  assert.equal(f.listeners.size, 0);
+  assert.equal(f.head.children.length, 0);
+  assert.equal(f.root.querySelector('[data-dsh-chat-zoom-hint]'), null);
+  const stored = [...f.storage];
+  f.controller.setPercent(180);
+  f.controller.clearMemory();
+  f.controller.resetKeyboardConfig();
+  f.controller.resetWheelConfig();
+  f.mutate([{ type:'attributes', target:f.root }]);
+  f.tick(10000); f.flushFrames();
+  assert.deepEqual([...f.storage], stored);
+  assert.equal(f.win[Symbol.for('dsh-plugin-chat-zoom:instance')], undefined);
+});
+
+test('remount restores previous owner markers and never erases a later external owner', t => {
+  const f = fixture(t);
+  f.controller.dispose();
+  f.flow.setAttribute('data-dsh-chat-zoom-owner', 'previous-owner');
+  const first = api.mountChatZoom(f.win);
+  assert.equal(f.flow.getAttribute('data-dsh-chat-zoom-owner'), 'dsh-plugin-chat-zoom');
+  first.dispose();
+  assert.equal(f.flow.getAttribute('data-dsh-chat-zoom-owner'), 'previous-owner');
+  const second = api.mountChatZoom(f.win);
+  t.after(() => second.dispose());
+  f.flow.setAttribute('data-dsh-chat-zoom-owner', 'later-owner');
+  second.dispose();
+  assert.equal(f.flow.getAttribute('data-dsh-chat-zoom-owner'), 'later-owner');
+});
+
+test('discovery handles hero, unsupported phase, hidden roots and returning chat without global fallback', t => {
+  const f = fixture(t);
+  f.flow.remove();
+  f.root.setAttribute('data-content-phase', 'hero');
+  const discover = () => { f.mutate([{ type:'attributes', target:f.root }]); f.tick(0); };
+  discover();
+  assert.equal(f.composer.getAttribute('data-dsh-chat-zoom-owner'), 'dsh-plugin-chat-zoom');
+  f.root.setAttribute('data-content-phase', 'other'); discover();
+  assert.equal(f.composer.getAttribute('data-dsh-chat-zoom-owner'), null);
+  assert.equal(f.dispatch('wheel', { target:f.textarea, deltaY:-1 }).defaultPrevented, false);
+  f.root.setAttribute('data-content-phase', 'hero');
+  f.root.hidden = true; discover();
+  assert.equal(f.composer.getAttribute('data-dsh-chat-zoom-owner'), null);
+  f.root.hidden = false; discover();
+  assert.equal(f.dispatch('wheel', { target:f.textarea, deltaY:-1 }).defaultPrevented, true);
+  assert.equal(f.body.getAttribute('data-dsh-chat-zoom-owner'), null);
+  assert.equal(f.sidebar.getAttribute('data-dsh-chat-zoom-owner'), null);
+  assert.equal(f.settings.getAttribute('data-dsh-chat-zoom-owner'), null);
+});
+
+test('multiple panels share percentage while retaining per-panel wheel gates and one live hint', t => {
+  const f = fixture(t);
+  const root = f.body.appendChild(new Element('div', { 'data-conversation-content':'', 'data-conversation-region':'chat' }));
+  const scroller = root.appendChild(new Element('div', { 'data-conversation-scroll':'' }));
+  const flow = scroller.appendChild(new Element('div', { 'data-chat-flow':'' }));
+  const composer = scroller.appendChild(new Element('div', { 'data-composer-seat':'', 'data-conversation-region':'composer' }));
+  f.mutate([{ type:'childList', addedNodes:[root], removedNodes:[] }]); f.tick(0);
+  assert.equal(flow.getAttribute('data-dsh-chat-zoom-owner'), 'dsh-plugin-chat-zoom');
+  f.dispatch('wheel', { target:f.flow, deltaY:-1 });
+  f.dispatch('wheel', { target:flow, deltaY:-1 });
+  assert.equal(f.controller.percent, 120);
+  const hints = f.body.querySelectorAll('[data-dsh-chat-zoom-hint]');
+  assert.equal(hints.length, 2);
+  assert.equal(hints.filter(hint => hint.getAttribute('role') === 'status').length, 1);
+  assert.ok(hints.every(hint => hint.textContent === '缩放 120%'));
+  f.controller.dispose();
+  assert.equal(flow.getAttribute('data-dsh-chat-zoom-owner'), null);
+  assert.equal(composer.getAttribute('data-dsh-chat-zoom-owner'), null);
+  assert.equal(f.body.querySelectorAll('[data-dsh-chat-zoom-hint]').length, 0);
+});
+
+test('modeled anchor math restores an offset immediately and after the next animation frame', t => {
+  const f = fixture(t);
+  f.scroller.scrollTop = 200;
+  const anchor = f.flow.appendChild(new Element('div', { 'data-chat-anchor-key':'synthetic-anchor' }));
+  let contentTop = 250;
+  anchor.getBoundingClientRect = () => {
+    const top = contentTop - f.scroller.scrollTop;
+    return { top, bottom:top + 40, height:40 };
+  };
+  Object.defineProperty(f.head.children[0], 'textContent', { set() { contentTop = 300; } });
+  f.controller.setPercent(150);
+  assert.equal(f.scroller.scrollTop, 250);
+  contentTop = 320; f.flushFrames();
+  assert.equal(f.scroller.scrollTop, 270);
+});
+
+test('modeled tail follows updated height while anchorless mid-chat retains scrollTop', t => {
+  const f = fixture(t);
+  Object.defineProperty(f.head.children[0], 'textContent', { set() { f.scroller.scrollHeight = 1200; } });
+  f.controller.setPercent(150);
+  assert.equal(f.scroller.scrollTop, 800);
+  f.scroller.scrollHeight = 1300; f.flushFrames();
+  assert.equal(f.scroller.scrollTop, 900);
+  f.scroller.scrollTop = 200;
+  f.controller.setPercent(160); f.flushFrames();
+  assert.equal(f.scroller.scrollTop, 200);
+});
+
+test('legacy percentage records remain readable without migration or malformed-record overwrites', t => {
+  const f = fixture(t);
+  f.controller.dispose();
+  for (const [raw, expected] of [['80',80], ['137',137], ['200',200], ['79',100], ['201',100], ['1e2',100], ['100.0',100], ['',100], ['null',100]]) {
+    f.storage.set('dsh-plugin-chat-zoom:v1:percent', raw);
+    const active = api.mountChatZoom(f.win);
+    assert.equal(active.percent, expected);
+    assert.equal(f.storage.get('dsh-plugin-chat-zoom:v1:percent'), raw);
+    assert.equal(active.getSnapshot().keyboardConfig.bindings.zoomIn, 'Ctrl+Plus');
+    assert.equal(active.getSnapshot().wheelConfig.modifier, 'Ctrl');
+    active.dispose();
   }
 });
