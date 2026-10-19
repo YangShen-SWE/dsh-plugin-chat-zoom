@@ -1,5 +1,11 @@
 # Validation record · 脱敏验收记录
 
+## 2026-10-19 · D6 · main v0.3.2（未发布 / unreleased）
+
+**中文**：按真实实现整理中英文设置、默认/自定义键盘、独立滚轮、恢复/清除与隐私记录；旧 v0.1.0 焦点/滚轮规则与 main 分开说明。仅改客户端维护注释，不改变可执行逻辑。新增 5 项文档契约检查：版本、实际存储键/默认 JSON、范围/示例绑定、相对链接/包引用与维护入口。新增检查首次 3/5 通过，缺口为缺少双语可校验记录示例与过时生成器注释；补齐后连同原 75 项模拟回归共 80/80 通过。语法、共享 React 注册及 14 文件 dry-run 包清单通过；未引入依赖/工具链，测试不入包。市场 PR #7323 已合并，规则内容未变；原 v0.1.0 资产重新下载并核对 SHA-256，保持有效且不替换。没有新增实机证据：下面 D5 表格中的宿主、视觉、物理输入、IME 与读屏未测项仍然未测。无 Release、部署或合并操作。
+
+**English:** aligned current bilingual usage, defaults/custom keys, independent wheels, reset/clear and privacy records with the implementation; distinguished v0.1.0's broader focus/wheel rules. Client edits are comments only, with no executable change. Added 5 dependency-free documentation contracts covering versions, actual keys/default JSON, limits/example bindings, local links/package references and maintenance entry points. Initially 3/5 passed: decoded bilingual examples and truthful maintenance comments were missing. After fixes, all 80 checks pass including the original 75 simulations. Syntax, shared React registration and the 14-file dry-run package pass; no new toolchain/dependency and tests remain outside packages. Market PR #7323 is merged with unchanged policy content; the original v0.1.0 asset was downloaded and SHA-256 verified without replacement. No new real-host evidence: D5's host/visual/physical-input/IME/screen-reader gaps below remain untested. No Release, deployment or merge action.
+
 ## 2026-10-18 · D5 · main v0.3.1（未发布 / unreleased）
 
 ### 中文

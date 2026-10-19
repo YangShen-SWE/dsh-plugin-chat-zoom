@@ -26,6 +26,8 @@
 
 2026-10-18 D5：main 回归修复开发版本为 **v0.3.1（未发布）**；验收证据和实机未测项见 [验收记录](VALIDATION.md)。已合并市场 PR 与原 v0.1.0 下载链接保持不变，不为源码修复重复投稿。
 
+2026-10-19 D6：开发版本为 **v0.3.2（未发布）**，仅完善双语使用、隐私与维护文档并清理注释，无执行逻辑/存储变化。再次核对市场 PR 已合并、贡献规则内容未变；原 v0.1.0 tarball 可下载且 SHA-256 不变。后续升级依赖单独发布授权、真实新资产和当时规则，不改已合并 PR，不把开发版本拼入不存在的下载链接。
+
 ### 仓库年龄门槛
 
 GitHub 仓库创建于 **2026-10-13 18:44:31 UTC**。满一天的最早时间为 **2026-10-14 18:44:31 UTC**（丹麦当地时间 20:44:31，UTC+02:00）。提交时尚未满一天，PR 不应勾选“已满一天”。
@@ -63,6 +65,8 @@ The tarball URL pins v0.1.0. A versioned filename must not be used under `latest
 2026-10-17 D4: main adds an independent Ctrl/Alt/Shift/Meta wheel modifier as **v0.3.0 (unreleased)**. The market PR has merged; do not edit its merged branch or resubmit. Market descriptions and demo images still describe released v0.1.0, with the valid original tarball retained. Any future market upgrade needs explicit release authorization and a real new package first, followed by the then-current market policy.
 
 2026-10-18 D5: regression fix on main is **v0.3.1 (unreleased)**. See the [validation record](VALIDATION.md) for evidence and real-host gaps. Leave the merged PR and original v0.1.0 link unchanged; do not resubmit a source-only fix.
+
+2026-10-19 D6: development version **v0.3.2 (unreleased)** updates bilingual usage/privacy/maintenance and comments only, without executable/storage changes. Rechecked the merged PR and unchanged policy content; the original v0.1.0 tarball downloads with unchanged SHA-256. A future upgrade needs separate release authorization, an actual asset and current policy. Do not edit the merged PR or invent a development-version download URL.
 
 **Age gate:** created 2026-10-13 18:44:31 UTC; eligible no earlier than 2026-10-14 18:44:31 UTC (20:44:31 in Denmark). Do not tick the one-day checkbox before that time. The current checker measures age when it runs; age-only failures can be rechecked upstream. No duplicate PR, close/reopen, empty push, fake date or gate bypass is needed. Scheduled rechecks have a queue and cooldown; eligibility does not guarantee an immediate green result.
 

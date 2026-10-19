@@ -13,7 +13,7 @@ DeepSeek Harness（DSH）聊天区域缩放插件。仅缩放聊天消息和输�
 
 补充文档：[更新说明](CHANGELOG.md) · [脱敏验收记录](VALIDATION.md) · [隐私说明](PRIVACY.md) · [贡献与维护](CONTRIBUTING.md) · [市场投稿与合并注意事项](MARKET.md)。这些文档后补于 main；既有 v0.1.0 安装包与 tag 保持不变。市场 PR #7323 已合并；界面展示仍取决于后续采集，安装包仍为 v0.1.0。
 
-**当前 main 开发版本：v0.3.1（尚未发布安装包）**。已接入自定义放大/缩小/复位键盘组合与独立滚轮修饰键（Ctrl/Alt/Shift/Meta）、原生设置、恢复默认与本地配置；默认仍为 Ctrl。下方下载和市场条目仍安装 v0.1.0，不包含本周开发更新；新能力当前仅在 main 源码中。
+**当前 main 开发版本：v0.3.2（尚未发布安装包）**。已接入自定义放大/缩小/复位键盘组合与独立滚轮修饰键（Ctrl/Alt/Shift/Meta）、原生设置、恢复默认与本地配置；默认仍为 Ctrl。下方下载和市场条目仍安装 v0.1.0，不包含本周开发更新；新能力当前仅在 main 源码中。
 
 ## 简介与示例图（已发布 v0.1.0）
 
@@ -90,7 +90,7 @@ dsh plugin --profile desktop add "dsh-plugin-chat-zoom@file:C:/Downloads/dsh-plu
 
 进入 **设置 → 缩放**：
 
-从 main 的 v0.1.2 起，顶部明确标出“仅缩放聊天消息与输入区”；倍率区域单独显示当前百分比和范围。“选择倍率、缩小、放大”为主要调整区，“恢复 100%、清除倍率记忆”另列一组，保留原生按钮与选择框，不添加尚未实现的快捷键配置。控件可随可用宽度换行；真实 DSH 窄屏布局和键盘操作尚未实机验收。
+以下设置说明对应当前 main，历史变更见[更新说明](CHANGELOG.md)；v0.1.0 安装包没有自定义键盘/滚轮分区。顶部标出“仅缩放聊天消息与输入区”，并显示当前倍率和范围。“选择倍率、缩小、放大”与“恢复 100%、清除倍率记忆”分组，下方另有真实可用的键盘表单和独立滚轮选择。均保留原生控件、换行与焦点样式；真实 DSH 窄屏布局和键盘操作尚未实机验收。
 
 | 控件 | 作用 |
 | --- | --- |
@@ -98,28 +98,32 @@ dsh plugin --profile desktop add "dsh-plugin-chat-zoom@file:C:/Downloads/dsh-plu
 | 缩小 / 放大 | 每次调整 10 个百分点 |
 | 恢复 100% | 恢复默认倍率，并保存该值 |
 | 清除倍率记忆 | 恢复 100%，删除本插件保存的倍率记录 |
+| 保存快捷键 | 校验三个输入；有效时应用并尝试保存，未保存草稿不生效 |
+| 恢复默认快捷键 | 丢弃键盘草稿并恢复默认，仅删除键盘记录，不改倍率或滚轮 |
+| 滚轮修饰键 | 选择一个修饰键，立即应用并尝试保存 |
+| 恢复默认滚轮 | 恢复 Ctrl，仅删除滚轮记录，不改倍率、键盘或键盘草稿 |
 
 倍率修改立即生效；自定义键盘输入需点击“保存快捷键”才生效。清除倍率记忆不会删除聊天、输入草稿、键盘/滚轮配置或其他设置；滚轮选择立即生效，无需“保存快捷键”。
 
-从 main 的 v0.1.3 起，设置底部显示初始倍率、操作完成或保存失败的状态。“恢复 100%”会保存 100%，即使当前已经是 100%；“清除倍率记忆”会恢复 100% 并删除记录，之后调整倍率或再次恢复会重新保存。无法保存/删除时会明确提示，而不声称记录已清除。存储键与格式不变。
+当前 main 的设置底部显示初始倍率、操作完成或保存失败的状态。“恢复 100%”会保存 100%，即使当前已经是 100%；“清除倍率记忆”会恢复 100% 并删除记录，之后调整倍率或再次恢复会重新保存。无法保存/删除时会明确提示，而不声称记录已清除。存储键与格式不变。
 
 设置使用原生键盘操作：`Tab` / `Shift+Tab` 移动焦点，方向键选择倍率，`Enter` 或空格激活按钮；不依赖聊天缩放快捷键。main 的“恢复默认快捷键”只重置三个键盘绑定，不改变倍率。恢复/清除按钮关联同一段区别说明，底部状态使用礼貌播报。已完成模拟树与事件检查，真实 Tab 顺序、选择框在各浏览器的交互和屏幕阅读器效果仍需实机验收。
 
 ### 快捷键（下表为默认绑定）
 
-main v0.3.1 的 **设置 → 缩放 → 键盘快捷键** 提供放大、缩小、复位三个输入框。输入组合后点击“保存快捷键”，例如分别设为 `Alt+J`、`Alt+K`、`F9`；只有保存后的绑定生效，新的键盘绑定替换而非叠加旧默认。滚轮独立配置，见下节；修改键盘不会改变滚轮。
+当前 main 的 **设置 → 缩放 → 键盘快捷键** 提供放大、缩小、复位三个输入框。输入组合后点击“保存快捷键”，例如分别设为 `Alt+J`、`Alt+K`、`F9`；只有保存后的绑定生效，新的键盘绑定替换而非叠加旧默认。滚轮独立配置，见下节；修改键盘不会改变滚轮。
 
 - 使用单次组合，以 `+` 连接 `Ctrl` / `Alt` / `Shift` / `Meta` 与主键。主键支持 `Plus`（`+` / `=`）、`Minus`（`-`）、数字、A–Z 和 F2/F8/F9，但须通过下面的安全限制。`Control`、`Option`、`Cmd` / `Command` 分别是 Ctrl、Alt、Meta 的别名，修饰键顺序和字母大小写会归一化。
 - 无修饰键或仅 Shift 时只允许 F2/F8/F9；字母仅允许含 Alt 且不含 Ctrl/Meta，保守拒绝 Alt+B/D/E/F/H/T 等菜单组合。Ctrl/Meta+数字 1–9、普通文字/编辑键、F1/F3/F4/F5/F11/F12、常见保留键、连续序列和重复绑定不可用。Ctrl/Meta+0 和符号键可用。Plus/Minus 忽略 Shift 差异，不能借此配置重叠动作；从 main v0.3.1 起，物理 Minus 键带 Shift 产生 `_` 时也匹配 Minus，其他键位的下划线不接管。其他修饰键必须准确匹配。示例不是跨系统无冲突保证。
 - “恢复默认快捷键”丢弃输入草稿、恢复默认并删除仅此键盘配置，倍率不变；“清除倍率记忆”不清除快捷键。格式无效时不覆盖已有绑定；本地保存/删除失败时会说明仅本页生效，刷新可能恢复此前记录。不会接管 IME、AltGraph 或全局快捷键；被 OS/宿主先截获时改用其他绑定或倍率控件，插件不会重写宿主保留键。
 
-### 自定义滚轮（仅 main v0.3.1，未发布）
+### 自定义滚轮（仅当前 main，未发布）
 
 在 **设置 → 缩放 → 滚轮缩放** 选择一个修饰键：`Ctrl`（默认）、`Alt`、`Shift` 或 `Meta`（Windows 键 / macOS Command）。选择立即生效并尝试保存；鼠标位于聊天消息或输入区时，只按所选一个键滚轮向上放大、向下缩小。普通无修饰滚轮和叠加其他修饰键的滚轮不接管；相比旧默认规则，本版不再接管 Ctrl+Shift 滚轮。仍保持 90ms 同向节流、反向立即响应和 80%–200% 边界。
 
 “恢复默认滚轮”恢复 Ctrl 并仅删除滚轮配置，不改倍率、键盘或未保存的键盘草稿；存储失败会提示本页有效、刷新可能回退。Shift 会占用该区域的横向滚动手势；Alt/Meta 可能被 OS/宿主先处理。插件不改写宿主保留操作，冲突时换键或用倍率控件。IME、AltGraph、弹窗与内嵌工具继续避让。触控板捏合报告为 Ctrl 滚轮时仍无法可靠区分；未选 Ctrl 时插件不接管此类事件，但浏览器可能自行处理。
 
-**以下表格仍是默认绑定，已发布 v0.1.0 只支持这些默认方式，不含自定义配置。**
+**下表是当前 main 的默认绑定与作用范围，不是 v0.1.0 的完整行为说明。** v0.1.0 没有自定义配置；其焦点判定较宽，消息内普通按钮/链接聚焦也可能响应键盘缩放，且 Ctrl+Shift 滚轮也可缩放。main 的收窄规则没有回写到旧包。
 
 | 操作 | 效果 | 使用位置 |
 | --- | --- | --- |
@@ -133,9 +137,9 @@ main v0.3.1 的 **设置 → 缩放 → 键盘快捷键** 提供放大、缩小�
 
 ## 隐私与卸载
 
-插件自身不发送网络请求、不上传聊天、不收集遥测，不写服务端设置。v0.1.0 只保存倍率键 `dsh-plugin-chat-zoom:v1:percent`；main v0.3.1 另保存 `dsh-plugin-chat-zoom:v1:keyboard`（版本号与三个绑定字符串）和 `dsh-plugin-chat-zoom:v1:wheel`（JSON：`{"version":1,"modifier":"Ctrl"}`，modifier 为所选单个修饰键），均位于当前浏览器来源的 localStorage。缺失/无效/未来键盘或滚轮配置使用默认，不迁走旧倍率或自动覆盖异常记录；不保存按键/滚轮事件日志，不跨设备/实时跨标签同步，也不按会话保存。
+插件自身不发送网络请求、不上传聊天、不收集遥测，不写服务端设置。v0.1.0 只保存倍率键 `dsh-plugin-chat-zoom:v1:percent`；当前 main 另保存 `dsh-plugin-chat-zoom:v1:keyboard`（版本号与三个绑定字符串）和 `dsh-plugin-chat-zoom:v1:wheel`（JSON：`{"version":1,"modifier":"Ctrl"}`，modifier 为所选单个修饰键），均位于当前浏览器来源的 localStorage。缺失/无效/未来键盘或滚轮配置使用默认，不迁走旧倍率或自动覆盖异常记录；不保存按键/滚轮事件日志，不跨设备/实时跨标签同步，也不按会话保存。
 
-如需移除记录，main 中先点击 **设置 → 缩放 → 恢复默认快捷键** 和 **恢复默认滚轮**（分别只清除自己的配置），再点击 **清除倍率记忆**，检查状态无失败后再到插件页禁用或卸载；v0.1.0 只需清除倍率记忆。正常停用会移除插件自有监听器、倍率标记、提示和样式；可能需要刷新或重启。默认停用保留倍率记录，**不要为了清理倍率而清空整个 localStorage**。
+如需移除记录，main 中先点击 **设置 → 缩放 → 恢复默认快捷键** 和 **恢复默认滚轮**（分别只清除自己的配置），再点击 **清除倍率记忆**，检查状态无失败后再到插件页禁用或卸载；v0.1.0 只需清除倍率记忆。正常停用会移除插件自有监听器、倍率标记、提示和样式；可能需要刷新或重启。默认停用保留现存倍率、键盘和滚轮记录，**不要为了清理倍率而清空整个 localStorage**。
 
 安装包的下载和 DSH 插件管理器自身可能使用网络；上面的隐私说明仅描述本插件运行时。
 
@@ -148,13 +152,13 @@ main v0.3.1 的 **设置 → 缩放 → 键盘快捷键** 提供放大、缩小�
 - **升级 DSH 后不响应**：插件依赖宿主内部 DOM 属性，不匹配时不会对整个页面强制缩放；可能需要更新适配。
 - **保存倍率失败**：浏览器可能限制本地存储，本次缩放仍可生效，但无法保证刷新后恢复。
 
-本次发布检查涵盖 JavaScript 语法、包内引用和客户端模块注册；不代表已完成所有 DSH 版本、物理鼠标操作或真实输入法的实机验证。
+当前开发检查涵盖模拟 DOM/虚拟 React、文档契约、JavaScript 语法、包内引用和模块注册；不代表已完成 DSH 实机、物理操作或真实输入法验证。浏览器支持 CSS zoom 不等于识别到了宿主聊天 DOM，设置可显示但区域不匹配时仍可能无效果；不会回退全页缩放。
 
 ## 仓库内容与重新打包
 
 本仓库包含插件文件、文档及无依赖的轻量回归测试，不包含私人聊天、缓存、安装配置备份或迁移工具。`lib/client.js` 为完整、可读的预构建客户端实现；本仓库未提供原始拆分源码和构建工具。
 
-在 Node.js 24 上运行 `node --test tests/chat-zoom.test.mjs` 可执行模拟 DOM 的事件回归测试。测试先在旧逻辑下复现焦点抢占，再验证修正；测试文件不随插件安装包分发。当前 75 项模拟检查通过；D5 覆盖与实机未测项见[脱敏验收记录](VALIDATION.md)。这不是 DSH/浏览器实机验收，详见[更新说明](CHANGELOG.md)。
+在 Node.js 24 上运行 `node --test tests/*.test.mjs`，执行 75 项模拟 DOM/虚拟 React/配置回归及 5 项文档契约检查，共 80 项通过。文档检查直接对照客户端默认值、存储 JSON、版本和相对链接；不验证真实 DSH。测试不随安装包分发，D5/D6 的实际证据与实机未测项见[脱敏验收记录](VALIDATION.md)。维护分区注释不是磁盘上的 src 文件；直接维护可读客户端，不运行不存在的生成器，见[贡献说明](CONTRIBUTING.md)。
 
 | 文件 | 用途 |
 | --- | --- |
@@ -188,9 +192,9 @@ npm pack --ignore-scripts
 
 [Download v0.1.0](https://github.com/YangShen-SWE/dsh-plugin-chat-zoom/releases/tag/v0.1.0) · [Report an issue](https://github.com/YangShen-SWE/dsh-plugin-chat-zoom/issues)
 
-Additional documents: [Changelog](CHANGELOG.md) · [Privacy](PRIVACY.md) · [Contributing](CONTRIBUTING.md) · [Market and merge notes](MARKET.md). These documents were added on main after release; the original v0.1.0 tag and archive remain unchanged. Market PR #7323 has merged; UI display still depends on collection, and installation remains v0.1.0.
+Additional documents: [Changelog](CHANGELOG.md) · [Validation](VALIDATION.md) · [Privacy](PRIVACY.md) · [Contributing](CONTRIBUTING.md) · [Market and merge notes](MARKET.md). These documents were added on main after release; the original v0.1.0 tag and archive remain unchanged. Market PR #7323 has merged; UI display still depends on collection, and installation remains v0.1.0.
 
-**Current main development version: v0.3.1 (no released package yet).** Custom zoom-in/out/reset chords, native settings inputs, validation, save/default reset and local keyboard preferences are wired in main. Wheel zoom now has an independent Ctrl/Alt/Shift/Meta choice with immediate application and its own default reset/local preference. Defaults still use Ctrl. Downloads and the market entry install v0.1.0 without this week's source-only development changes.
+**Current main development version: v0.3.2 (no released package yet).** Custom zoom-in/out/reset chords, native settings inputs, validation, save/default reset and local keyboard preferences are wired in main. Wheel zoom now has an independent Ctrl/Alt/Shift/Meta choice with immediate application and its own default reset/local preference. Defaults still use Ctrl. Downloads and the market entry install v0.1.0 without this week's source-only development changes.
 
 ### Short description and demo images (released v0.1.0)
 
@@ -255,22 +259,26 @@ Download and extract the source archive, or clone this repository. In the DSH Pl
 
 Open **Settings → 缩放 (Zoom)**:
 
-Starting with v0.1.2 on main, the scope notice states that only chat messages and the input area are zoomed. A separate percentage display shows the current level and range. Select/zoom-out/zoom-in controls form the primary group; reset/clear-memory controls form a separate group. All remain native buttons/selects, with no nonfunctional shortcut-configuration fields. Controls can wrap with available width; actual narrow-host layout and keyboard operation have not been verified on a real DSH host.
+These settings instructions describe current main; see the [changelog](CHANGELOG.md) for history. The v0.1.0 archive has no custom keyboard/wheel sections. A scope notice and percentage display show chat/input-only zoom, current level and range. Primary level controls and reset/clear actions are grouped separately, followed by a working keyboard form and independent wheel selector. Native controls retain wrapping and focus styles; narrow DSH layout and actual keyboard navigation remain unverified.
 
 | Chinese UI label | Meaning |
 | --- | --- |
 | 聊天倍率 | Select a chat zoom level from 80% to 200% |
 | 缩小 / 放大 | Zoom out / in by 10 percentage points |
 | 恢复 100% | Reset to 100% and save this value |
-| 清除倍率记忆 | Reset to 100% and remove this plugin's saved preference |
+| 清除倍率记忆 | Reset to 100% and remove only the level record |
+| 保存快捷键 | Validate all three inputs, then apply and attempt to save; drafts stay inactive |
+| 恢复默认快捷键 | Discard keyboard drafts, restore defaults and remove only keyboard records |
+| 滚轮修饰键 | Select one modifier; apply immediately and attempt to save |
+| 恢复默认滚轮 | Restore Ctrl and remove only wheel records; preserve level, keyboard and drafts |
 
 Level changes take effect immediately; keyboard drafts require Save. Clearing the zoom preference does not delete chats, drafts, keyboard/wheel preferences or other settings. Wheel selections apply immediately, without keyboard Save.
 
-Starting with v0.1.3 on main, the settings status shows the initial level, action feedback or storage failures. Reset saves 100%, even when already at 100%. Clear resets to 100% and removes the record; a later adjustment or reset saves it again. Failed saves/removals are reported, not described as successful clearing. The storage key and format are unchanged.
+On current main, the settings status shows the initial level, action feedback or storage failures. Reset saves 100%, even when already at 100%. Clear resets to 100% and removes the record; a later adjustment or reset saves it again. Failed saves/removals are reported, not described as successful clearing. The storage key and format are unchanged.
 
 Settings use native keyboard controls: `Tab` / `Shift+Tab` move focus, arrow keys select a level, and `Enter` or Space activates buttons. Chat zoom shortcuts are not required. Main's 恢复默认快捷键 resets only the three keyboard bindings, not the level. Reset/clear buttons reference the same explanatory text, and the status uses polite announcements. Simulated-tree/event checks pass, but real Tab order, browser-specific select behavior and screen-reader announcements still require real-host acceptance.
 
-### Custom keyboard shortcuts (main v0.3.1 only; table below shows defaults)
+### Custom keyboard shortcuts (current main only; table below shows defaults)
 
 In **Settings → 缩放 → 键盘快捷键**, enter zoom-in, zoom-out and reset chords, then click **保存快捷键** (Save). For example: `Alt+J`, `Alt+K`, `F9`. Drafts do not apply until saved. Saved chords replace, rather than add to, the defaults. Wheel zoom is configured independently in the section below; changing keyboard chords does not change it.
 
@@ -278,13 +286,13 @@ In **Settings → 缩放 → 键盘快捷键**, enter zoom-in, zoom-out and rese
 - Unmodified or Shift-only keys are limited to F2/F8/F9. Letters require Alt without Ctrl/Meta; Alt+B/D/E/F/H/T menu chords are conservatively refused. Ctrl/Meta+1–9, typing/editing keys, F1/F3/F4/F5/F11/F12, common reserved chords, sequences and duplicates are rejected. Ctrl/Meta+0 and symbol keys are available. Plus/Minus ignore Shift differences to prevent overlap. Since main v0.3.1, shifted physical Minus producing `_` also matches Minus; underscores from other keys are not claimed. Other modifiers match exactly. Examples are not a cross-platform conflict guarantee.
 - **恢复默认快捷键** discards drafts, restores defaults and removes only keyboard preferences; the level stays unchanged. **清除倍率记忆** does not remove bindings. Invalid input leaves active preferences intact. Storage failures explicitly report page-only changes that may revert on refresh. IME/AltGraph and out-of-scope focus remain excluded. OS/host shortcuts can win before this plugin: choose another chord or use level controls; host reserved bindings are never rewritten.
 
-### Custom wheel modifier (main v0.3.1 only, unreleased)
+### Custom wheel modifier (current main only, unreleased)
 
 In **Settings → 缩放 → 滚轮缩放**, choose exactly one modifier: `Ctrl` (default), `Alt`, `Shift` or `Meta` (Windows key / macOS Command). It applies immediately and attempts to save. With the pointer over chat/composer, hold only that modifier and wheel up/down to zoom in/out. Unmodified scrolling and extra modifiers are not claimed; unlike the old Ctrl gate, Ctrl+Shift wheel is now excluded too. Same-direction steps remain throttled at 90ms, reversals are immediate, and limits stay 80%–200%.
 
 **恢复默认滚轮** restores Ctrl and removes only wheel preferences, leaving the level, keyboard settings and keyboard drafts intact. Failed saves/removals report page-only changes that may revert on refresh. Shift replaces horizontal scrolling in the claimed area; Alt/Meta may be handled first by the OS/host. Choose another modifier or use level controls on conflict. IME, AltGraph, dialogs and embedded tools remain excluded. Pinch gestures reported as Ctrl wheels are still indistinguishable; when Ctrl is not selected the plugin leaves them alone, but the browser may handle them.
 
-**The table below shows defaults; released v0.1.0 supports only those defaults, without custom configuration.**
+**This table describes current main defaults and scope, not the full behavior of v0.1.0.** The old archive has no custom configuration: ordinary message buttons/links may still allow keyboard zoom when focused, and Ctrl+Shift wheels can also zoom. Main's narrower rules were not backported into that immutable archive.
 
 | Default shortcut | Action | Where it works |
 | --- | --- | --- |
@@ -298,9 +306,9 @@ Starting with v0.1.1 on main, focused input means a textarea, text input, or con
 
 ### Privacy and removal
 
-The plugin itself makes no network requests, uploads no chats, collects no telemetry, and writes no server settings. v0.1.0 stores only `dsh-plugin-chat-zoom:v1:percent`. Main v0.3.1 also stores `dsh-plugin-chat-zoom:v1:keyboard` (version and three binding strings) and `dsh-plugin-chat-zoom:v1:wheel` (JSON such as `{"version":1,"modifier":"Ctrl"}` for the selected single modifier) in origin-local localStorage. Missing/invalid/future keyboard or wheel records use defaults without migrating the old percentage or silently overwriting bad data. No key/wheel event logs, cross-device/live-tab sync or per-chat settings.
+The plugin itself makes no network requests, uploads no chats, collects no telemetry, and writes no server settings. v0.1.0 stores only `dsh-plugin-chat-zoom:v1:percent`. Current main also stores `dsh-plugin-chat-zoom:v1:keyboard` (version and three binding strings) and `dsh-plugin-chat-zoom:v1:wheel` (JSON such as `{"version":1,"modifier":"Ctrl"}` for the selected single modifier) in origin-local localStorage. Missing/invalid/future keyboard or wheel records use defaults without migrating the old percentage or silently overwriting bad data. No key/wheel event logs, cross-device/live-tab sync or per-chat settings.
 
-On main, first use **Settings → 缩放 → 恢复默认快捷键** and **恢复默认滚轮** (each removes only its own configuration), then **清除倍率记忆** and check for failure feedback before disabling or uninstalling. v0.1.0 only needs the latter. Normal cleanup removes the plugin's listeners, zoom markers, hints, and styles; a refresh or restart may be needed. Disabling keeps the preference by default. **Do not clear all localStorage just to remove the zoom preference.**
+On main, first use **Settings → 缩放 → 恢复默认快捷键** and **恢复默认滚轮** (each removes only its own configuration), then **清除倍率记忆** and check for failure feedback before disabling or uninstalling. v0.1.0 only needs the latter. Normal cleanup removes the plugin's listeners, zoom markers, hints, and styles; a refresh or restart may be needed. Disabling keeps existing level, keyboard and wheel preferences by default. **Do not clear all localStorage just to remove the zoom preference.**
 
 Downloading the package and using DSH's plugin manager may involve network requests. The privacy statement above describes this plugin's runtime only.
 
@@ -313,13 +321,13 @@ Downloading the package and using DSH's plugin manager may involve network reque
 - **No response after a DSH update:** internal DOM attributes may have changed. The plugin avoids falling back to whole-page zoom and may need an adapter update.
 - **Preference not saved:** the browser may block local storage. Zoom can still work for the current page, but may not be restored after a refresh.
 
-Release checks cover JavaScript syntax, package references, and client module registration. They do not prove real-device testing across all DSH versions, physical mouse actions, or actual IME input.
+Development checks cover simulated DOM/virtual React, documentation contracts, syntax, package references and module registration, not real-host/physical-input/IME acceptance. CSS zoom support alone does not confirm a supported chat DOM: settings may appear while no recognized area changes. There is no whole-page fallback.
 
 ### Repository and packaging
 
 The repository contains plugin files, documentation, and small dependency-free regression tests. It excludes private conversations, caches, installation/configuration backups, and migration tools. `lib/client.js` is the complete, readable prebuilt client implementation; the original split sources and build tools are not included.
 
-Run `node --test tests/chat-zoom.test.mjs` on Node.js 24 for simulated-DOM event regression checks. The tests reproduced the focus issue before the fix and verify the corrected behavior. Tests are excluded from installation packages. All 75 current simulated checks pass; see the [redacted validation record](VALIDATION.md) for D5 coverage and untested real-host scenarios. They are not real DSH/browser acceptance; see the [changelog](CHANGELOG.md).
+Run `node --test tests/*.test.mjs` on Node.js 24: 75 simulated DOM/virtual-React/configuration checks and 5 documentation contracts pass (80 total). Documentation checks compare actual client defaults, storage JSON, versions and local links, not real-host behavior. Tests are excluded from packages. See the [validation record](VALIDATION.md) for D5/D6 evidence and untested host scenarios. Section comments are not on-disk src files: maintain the readable client directly rather than running a missing generator; see [contributing](CONTRIBUTING.md).
 
 | File | Purpose |
 | --- | --- |

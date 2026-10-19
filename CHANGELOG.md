@@ -1,5 +1,21 @@
 # Changelog · 更新说明
 
+## v0.3.2 — Unreleased / 未发布（2026-10-19，D6 文档核对）
+
+### 中文
+
+- **需求与文档**：按实际实现更新双语 README 的当前设置分组、快捷键保存与独立滚轮；删除“尚无快捷键配置”等过时描述。补全倍率、键盘、滚轮恢复/清除的独立性与失败反馈。默认表明确描述 main 的焦点/精确修饰键范围，另提示旧 v0.1.0 焦点较宽且接受 Ctrl+Shift 滚轮，不把未发布修复说成旧包已有。
+- **隐私与维护**：记录三种 localStorage 键、真实格式、默认示例、读取回退与显式写入/删除时机；未保存草稿只留组件内存。清理无网络、遥测、权限或存储机制变化。将预构建客户端的旧生成器/拆分源码注释改为维护分区说明；去除注释后与上一提交字节一致，无可执行逻辑变更。不添加构建工具链。
+- **版本与验证**：实质文档更新按当前 0.3.1 递增 PATCH 为 0.3.2。增加 5 项无依赖文档契约检查，初次 3/5 通过，暴露缺失的双语可校验示例与过时注释；修正后与原 75 项模拟回归共 80/80 通过。入口/客户端/两份测试语法、版本与真实默认值、共享 React、相对链接、图片/14 文件 dry-run 清单通过。详情见 [验收记录](VALIDATION.md)。没有新实机、物理输入、真实 IME 或读屏证据。
+- **市场与发布**：PR #7323 已合并，贡献规则内容未变；不重复投稿/更新已合并 PR。旧 v0.1.0 下载重新核验有效且 SHA-256 不变，市场仍保留此包和准确简介。自定义能力仍只在 main；未来须另获发布授权、创建真实新包后再升级市场链接。本次无 Release、部署、合并或旧 tag/资产修改。
+
+### English
+
+- Updated bilingual usage to describe actual settings groups, saved keyboard chords and independent wheel selection. Removed stale statements that shortcut configuration is absent. Clarified independent reset/clear and failure feedback. The default table describes main's focus/exact-modifier rules; v0.1.0 has broader focus and accepts Ctrl+Shift wheel, so main fixes are not claimed to be in the old archive.
+- Documented the three localStorage keys, real formats/decoded defaults, read fallback and explicit write/remove triggers; unsaved drafts stay in component memory. No networking, telemetry, permissions or storage-mechanism change. Replaced stale generator/split-source comments with maintained sections; stripping comments yields byte-identical executable content to the previous commit. No build toolchain added.
+- This meaningful documentation update increments current 0.3.1 to patch 0.3.2. Added 5 documentation contracts: initially 3/5 passed, exposing missing bilingual examples and stale comments. After fixes, all 80 checks pass including the original 75 simulations. Syntax for both entries/tests, versions/defaults, shared React, local links and PNG/14-file dry-run manifest pass. See [validation](VALIDATION.md). No new real-host, physical-input, actual IME or screen-reader evidence.
+- PR #7323 is merged and policy content is unchanged; no duplicate submission or merged-PR edit. Re-downloaded v0.1.0 remains valid with unchanged SHA-256, and the market retains its archive and matching description. Custom features remain source-only on main. A future market upgrade requires separate release authorization and an actual new asset. No Release, deployment, merge or old tag/asset edit.
+
 ## v0.3.1 — Unreleased / 未发布（2026-10-18，D5 回归）
 
 ### 中文

@@ -6,11 +6,15 @@
 
 本仓库分发完整、可读的预构建 `lib/client.js`，没有原始拆分源码或构建工具。修改此文件需保持 DSH 共享 React 模块加载方式，不引入独立 React 副本或安装脚本。不修改用户的宿主配置，不自动重启 DSH。
 
-D5 的逻辑证据、模拟器限制与实机未测项已记录在[脱敏验收记录](VALIDATION.md)。后续补验只能添加实际执行结果，不把模拟通过改称实机通过。
+D5/D6 的逻辑与文档证据、模拟器限制与实机未测项已记录在[脱敏验收记录](VALIDATION.md)。后续补验只能添加实际执行结果，不把模拟通过改称实机通过。
 
-提交前检查：
+### 直接维护预构建客户端
 
-1. 运行 `node --check index.js`、`node --check lib/client.js`，以及 `node --test tests/chat-zoom.test.mjs`（Node.js 24，无额外依赖）。测试挂载模拟 DOM 中的真实控制器，不等于宿主实机验收。
+直接编辑 `lib/client.js`，文件中的规则/存储、DOM 适配、控制器与设置分区只是导航注释，不对应本仓库中的 `src/` 文件。不运行不存在的 `build-client.mjs`，不为此补建工具链。修改后保留模块 ID、宿主共享 React 和原生设置注册契约。无执行逻辑变化的文档/注释修订也需诚实说明。
+
+### 提交前检查
+
+1. 运行 `node --check index.js`、`node --check lib/client.js`，以及 `node --test tests/*.test.mjs`（Node.js 24，无额外依赖）。事件测试挂载模拟 DOM 中的真实控制器；文档测试对照真实默认值、配置格式、版本和链接，二者都不等于宿主实机验收。
 2. 用 `npm pack --dry-run --ignore-scripts` 核对包清单，确认 `dsh.bundle.patch`、宿主入口、客户端、README、更新说明、补充文档和 LICENSE 均存在，测试文件不进入安装包。
 3. 实机验证聊天与输入区缩放、设置控件、默认/自定义快捷键的保存/非法与重复校验/恢复、滚轮 Ctrl/Alt/Shift/Meta 精确单键匹配、普通滚动与额外修饰键不接管、90ms 节流/即时反向、倍率/键盘/滚轮独立恢复与清除、本地失败反馈、边界倍率、刷新恢复及禁用清理；同时确认侧栏/设置不缩放、模态弹窗与中文输入法不被抢占。注明未完成的场景，不用语法检查冒充实机验收。
 
@@ -24,11 +28,15 @@ Use [Issues](https://github.com/YangShen-SWE/dsh-plugin-chat-zoom/issues) or a P
 
 The readable prebuilt client is the maintained runtime in this repository; split sources and build tools are not shipped. Keep DSH's shared React loading. Do not add a separate React copy, install scripts, automatic host restarts or user configuration edits.
 
-The [redacted validation record](VALIDATION.md) records D5 logic evidence, model limitations and untested real-host cases. Add only checks actually performed; never relabel simulated passes as host acceptance.
+The [redacted validation record](VALIDATION.md) records D5/D6 logic and documentation evidence, model limitations and untested real-host cases. Add only checks actually performed; never relabel simulated passes as host acceptance.
 
-Before submitting:
+### Maintain the prebuilt client directly
 
-1. Run `node --check index.js`, `node --check lib/client.js`, and `node --test tests/chat-zoom.test.mjs` (Node.js 24, no extra dependencies). The tests mount the real controller in a simulated DOM, not a real DSH host.
+Edit `lib/client.js` directly. Rule/storage, DOM-adapter, controller and settings section comments are navigation aids, not a shipped `src/` tree. Do not run a missing `build-client.mjs` or add a toolchain for it. Preserve module ID, host-shared React and native settings registration. Describe documentation/comment-only changes as such.
+
+### Before submitting
+
+1. Run `node --check index.js`, `node --check lib/client.js`, and `node --test tests/*.test.mjs` (Node.js 24, no extra dependencies). Event tests mount the real controller in simulated DOM; documentation tests compare real defaults, schemas, versions and links. Neither is real-host acceptance.
 2. Inspect `npm pack --dry-run --ignore-scripts` for the bundle patch, host entry, client, README, changelog, supplemental documents and license. Tests must stay outside the installation archive.
 3. Check scoped chat/composer zoom, settings, default/custom binding save/validation/default reset, exact Ctrl/Alt/Shift/Meta single-modifier wheel matching, unclaimed normal/extra-modifier wheels, 90ms throttle/immediate reversal, separate zoom/keyboard/wheel reset and clearing, storage-failure feedback, limits, reload and cleanup on a real host. Check unaffected sidebar/settings, modal dialogs and IME. State untested scenarios; syntax checks are not real-host acceptance.
 
