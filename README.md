@@ -13,7 +13,15 @@ DeepSeek Harness（DSH）聊天区域缩放插件。仅缩放聊天消息和输�
 
 补充文档：[更新说明](CHANGELOG.md) · [脱敏验收记录](VALIDATION.md) · [隐私说明](PRIVACY.md) · [贡献与维护](CONTRIBUTING.md) · [市场投稿与合并注意事项](MARKET.md)。这些文档后补于 main；既有 v0.1.0 安装包与 tag 保持不变。市场 PR #7323 已合并；界面展示仍取决于后续采集，安装包仍为 v0.1.0。
 
-**当前 main 开发版本：v0.3.2（尚未发布安装包）**。已接入自定义放大/缩小/复位键盘组合与独立滚轮修饰键（Ctrl/Alt/Shift/Meta）、原生设置、恢复默认与本地配置；默认仍为 Ctrl。下方下载和市场条目仍安装 v0.1.0，不包含本周开发更新；新能力当前仅在 main 源码中。
+**当前 main 开发版本：v0.3.3（尚未发布安装包）**。已接入自定义放大/缩小/复位键盘组合与独立滚轮修饰键（Ctrl/Alt/Shift/Meta）、原生设置、恢复默认与本地配置；默认仍为 Ctrl。下方下载和市场条目仍安装 v0.1.0，不包含本周开发更新；新能力当前仅在 main 源码中。
+
+## 本周交付与发布前检查（D7，2026-10-22 补执行）
+
+本周源码交付：聊天文字编辑焦点收窄；原生设置分组、状态与独立清除；三项自定义键盘绑定；Ctrl/Alt/Shift/Meta 独立滚轮选择；Shift+物理 Minus 修正；本地配置与维护文档。运行时代码本次不变。
+
+当前 v0.3.3 仍是未发布开发版本。实际压缩包检查与完整周验收边界见[验收记录](VALIDATION.md)。打包成功只证明内容完整，不证明已经适合全部宿主发布。发布前仍需在指定 DSH/浏览器上验证真实聊天布局、高倍率编辑与发送、物理键鼠/触控板、IME、读屏和停用重启；不支持的宿主版本保持未验证，不承诺兼容。
+
+后续顺序：补充实机结果并修复实际问题 → 获得独立发布授权 → 生成新 tag/Release 与真实安装包 → 按当时市场规则升级下载链接。不得移动旧 tag、替换旧包或把 main 版本拼成下载 URL。市场仍安装 v0.1.0，本次不升级市场条目。
 
 ## 简介与示例图（已发布 v0.1.0）
 
@@ -194,7 +202,15 @@ npm pack --ignore-scripts
 
 Additional documents: [Changelog](CHANGELOG.md) · [Validation](VALIDATION.md) · [Privacy](PRIVACY.md) · [Contributing](CONTRIBUTING.md) · [Market and merge notes](MARKET.md). These documents were added on main after release; the original v0.1.0 tag and archive remain unchanged. Market PR #7323 has merged; UI display still depends on collection, and installation remains v0.1.0.
 
-**Current main development version: v0.3.2 (no released package yet).** Custom zoom-in/out/reset chords, native settings inputs, validation, save/default reset and local keyboard preferences are wired in main. Wheel zoom now has an independent Ctrl/Alt/Shift/Meta choice with immediate application and its own default reset/local preference. Defaults still use Ctrl. Downloads and the market entry install v0.1.0 without this week's source-only development changes.
+**Current main development version: v0.3.3 (no released package yet).** Custom zoom-in/out/reset chords, native settings inputs, validation, save/default reset and local keyboard preferences are wired in main. Wheel zoom now has an independent Ctrl/Alt/Shift/Meta choice with immediate application and its own default reset/local preference. Defaults still use Ctrl. Downloads and the market entry install v0.1.0 without this week's source-only development changes.
+
+### Weekly delivery and pre-release checks (D7, completed late on 2026-10-22)
+
+Source delivery includes narrower composer-text focus, native grouped settings and feedback, independent clearing, three custom keyboard chords, a separate Ctrl/Alt/Shift/Meta wheel choice, the shifted physical Minus fix, and local-configuration/maintenance documentation. This update makes no runtime changes.
+
+Development v0.3.3 is still unreleased. See [validation](VALIDATION.md) for actual archive checks and weekly evidence. Packaging proves archive integrity, not readiness across hosts. Real DSH layout, high-zoom editing/sending, physical keyboard/mouse/trackpad, actual IME, screen readers and disable/restart still need checks on a named host/browser. Untested host versions remain unverified.
+
+Before upgrading the market: record real-host results and fix proven issues, obtain separate release approval, create a new tag/Release and real asset, then follow current market policy. Never move old tags, replace old packages or invent a main-version download URL. The market continues to install v0.1.0.
 
 ### Short description and demo images (released v0.1.0)
 

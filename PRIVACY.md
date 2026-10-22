@@ -2,7 +2,7 @@
 
 ## 中文
 
-本说明区分已发布 v0.1.0 与当前 main 的 **v0.3.2（未发布）**；不涵盖 DSH 宿主、GitHub 下载或其他插件。main 的开发变化不属于旧 v0.1.0 安装包。本次仅澄清文档，不新增存储、网络或权限。
+本说明区分已发布 v0.1.0 与当前 main 的 **v0.3.3（未发布）**；不涵盖 DSH 宿主、GitHub 下载或其他插件。main 的开发变化不属于旧 v0.1.0 安装包。本次仅澄清文档，不新增存储、网络或权限。
 
 ### 实际本地记录
 
@@ -30,7 +30,7 @@
 
 ## English
 
-This statement distinguishes released v0.1.0 from **v0.3.2 on main (unreleased)**. It excludes the DSH host, GitHub downloads and other plugins. Main's changes are not in the old archive. This documentation update adds no storage, network access or permissions.
+This statement distinguishes released v0.1.0 from **v0.3.3 on main (unreleased)**. It excludes the DSH host, GitHub downloads and other plugins. Main's changes are not in the old archive. This documentation update adds no storage, network access or permissions.
 
 ### Actual local records
 

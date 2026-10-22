@@ -1,6 +1,6 @@
 {
   "name": "dsh-plugin-chat-zoom",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "homepage": "https://github.com/YangShen-SWE/dsh-plugin-chat-zoom#readme",
   "repository": { "type": "git", "url": "git+https://github.com/YangShen-SWE/dsh-plugin-chat-zoom.git" },
   "bugs": { "url": "https://github.com/YangShen-SWE/dsh-plugin-chat-zoom/issues" },

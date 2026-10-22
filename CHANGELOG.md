@@ -1,5 +1,21 @@
 # Changelog · 更新说明
 
+## v0.3.3 — Unreleased / 未发布（2026-10-22，D7 补执行）
+
+### 中文
+
+- 汇总本周源码交付及发布前验收顺序，明确延期的实机布局、编辑发送、物理输入、IME、读屏与停用重启，不宣称全部可发布。原定 10 月 20 日的 D7 于 10 月 22 日补执行，不回填执行日期。
+- 文档/打包整理按当前 0.3.2 动态递增 PATCH；运行时、默认值、三种存储键、权限及依赖不变。README 与隐私版本同步。
+- 验证采用完整现有 80 项轻量检查、入口/客户端/测试语法、共享 React 与链接，以及忽略安装脚本生成的真实 tgz：逐一检查 14 个归档文件与工作树字节一致，排除测试、私密文件和临时包。详见 [验收记录](VALIDATION.md)。
+- 市场 PR #7323 已合并，贡献指南内容未变；仍仅 v0.1.0 已发布，不重复投稿，不自动创建 Release、部署、合并或改旧 tag/资产。
+
+### English
+
+- Summarize weekly source delivery and the pre-release sequence. Real-host layout, editing/sending, physical input, IME, screen readers and disable/restart remain deferred, not accepted. D7 was scheduled for October 20 but completed on October 22; execution dates are not backdated.
+- Increment current 0.3.2 by PATCH for documentation/package review. Runtime, defaults, three storage keys, permissions and dependencies are unchanged; synchronize README/privacy versions.
+- Run all 80 existing checks, entry/client/test syntax, shared React and links, then generate a real tgz with install scripts ignored. Compare each of its 14 files byte-for-byte with the working tree; exclude tests, private files and temporary archives. See [validation](VALIDATION.md).
+- Market PR #7323 is merged and policy content is unchanged. v0.1.0 remains the only release. No duplicate submission, automatic Release, deployment, merge or old tag/asset change.
+
 ## v0.3.2 — Unreleased / 未发布（2026-10-19，D6 文档核对）
 
 ### 中文

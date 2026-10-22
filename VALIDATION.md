@@ -1,5 +1,13 @@
 # Validation record · 脱敏验收记录
 
+## 2026-10-22 · D7 补执行 · main v0.3.3（未发布 / unreleased）
+
+**中文**：D7 原定 10 月 20 日，本日补执行。周交付已在 README 汇总；D1 焦点、D2 设置/反馈、D3 键盘、D4 滚轮、D5 符号修复与模拟回归、D6 文档均为源码交付，不是新发布包。本次无运行时修改。完整现有 80 项检查和语法/模块/链接检查通过；另用 npm pack --ignore-scripts 生成真实 tgz，验证 gzip/tar、归档路径、恰好 14 个文件及每个文件与当前工作树字节一致。包只留工作区诊断目录，不提交，不上传 Release，不安装宿主。
+
+**English:** D7 was scheduled for October 20 and completed today. README summarizes source-only deliveries: D1 focus, D2 settings/feedback, D3 keyboard, D4 wheel, D5 symbol fix/simulation and D6 documentation. No runtime edits in D7. All 80 existing checks and syntax/module/link checks pass. A real npm pack --ignore-scripts archive passes gzip/tar/path checks and contains exactly 14 files, each byte-identical to its working-tree source. Keep it only in local diagnostics, not Git, Releases or the installed host.
+
+**发布待确认 / Release pending**：指定 DSH/浏览器的实机视觉隔离、长聊天/异步图片、80%/200% 编辑与发送、物理键鼠/触控板、IME、原生键盘导航/读屏、停用重启依旧未测。需补实际结果、单独发布授权及真实新资产后才能升级市场。Real-host/physical-input gaps below remain open; passing archive tests is not release approval. PR #7323 is merged; retain the valid v0.1.0 market URL.
+
 ## 2026-10-19 · D6 · main v0.3.2（未发布 / unreleased）
 
 **中文**：按真实实现整理中英文设置、默认/自定义键盘、独立滚轮、恢复/清除与隐私记录；旧 v0.1.0 焦点/滚轮规则与 main 分开说明。仅改客户端维护注释，不改变可执行逻辑。新增 5 项文档契约检查：版本、实际存储键/默认 JSON、范围/示例绑定、相对链接/包引用与维护入口。新增检查首次 3/5 通过，缺口为缺少双语可校验记录示例与过时生成器注释；补齐后连同原 75 项模拟回归共 80/80 通过。语法、共享 React 注册及 14 文件 dry-run 包清单通过；未引入依赖/工具链，测试不入包。市场 PR #7323 已合并，规则内容未变；原 v0.1.0 资产重新下载并核对 SHA-256，保持有效且不替换。没有新增实机证据：下面 D5 表格中的宿主、视觉、物理输入、IME 与读屏未测项仍然未测。无 Release、部署或合并操作。
